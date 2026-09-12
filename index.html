@@ -1,0 +1,2270 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#090b10">
+
+<title>My Money</title>
+
+<style>
+:root{
+ --bg:#090b10;
+ --card:#151922;
+ --card2:#1d2330;
+ --text:#fff;
+ --muted:#9299a8;
+ --line:#2b3240;
+ --accent:#8b5cf6;
+ --green:#22c55e;
+ --red:#ef4444;
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial;
+}
+
+body.light{
+ --bg:#f4f5f8;
+ --card:#fff;
+ --card2:#eef0f5;
+ --text:#111827;
+ --muted:#667085;
+ --line:#dddfe5;
+}
+
+button,input,select,textarea{
+ font:inherit;
+}
+
+button{
+ cursor:pointer;
+}
+
+.app{
+ max-width:760px;
+ margin:auto;
+ min-height:100vh;
+ padding:15px 14px 100px;
+}
+
+header{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:15px;
+}
+
+h1{margin:0;font-size:27px}
+h2{margin:10px 0}
+h3{margin:5px 0}
+
+.muted{
+ color:var(--muted);
+ font-size:13px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.card{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:22px;
+ padding:16px;
+ margin:12px 0;
+}
+
+.icon{
+ width:43px;
+ height:43px;
+ border-radius:14px;
+ background:var(--card);
+ color:var(--text);
+ border:1px solid var(--line);
+ font-size:20px;
+}
+
+.balanceScroll{
+ display:flex;
+ gap:12px;
+ overflow-x:auto;
+ scroll-snap-type:x mandatory;
+ scrollbar-width:none;
+}
+
+.balanceScroll::-webkit-scrollbar{display:none}
+
+.balance{
+ min-width:100%;
+ scroll-snap-align:center;
+ background:linear-gradient(145deg,var(--card2),var(--card));
+ border:1px solid var(--line);
+ border-radius:25px;
+ padding:20px;
+}
+
+.currency{
+ font-size:16px;
+ font-weight:700;
+}
+
+.total{
+ font-size:30px;
+ font-weight:800;
+ margin:16px 0;
+}
+
+.two{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+
+.mini{
+ background:#0002;
+ border-radius:15px;
+ padding:12px;
+}
+
+.mini b{
+ display:block;
+ margin-top:5px;
+ font-size:17px;
+}
+
+label{
+ display:block;
+ color:var(--muted);
+ font-size:13px;
+ margin:13px 0 6px;
+}
+
+input,select,textarea{
+ width:100%;
+ padding:13px;
+ border-radius:14px;
+ border:1px solid var(--line);
+ background:var(--card2);
+ color:var(--text);
+ outline:none;
+}
+
+textarea{
+ min-height:80px;
+ resize:vertical;
+}
+
+.primary{
+ width:100%;
+ padding:14px;
+ margin-top:15px;
+ border:0;
+ border-radius:15px;
+ background:var(--accent);
+ color:white;
+ font-weight:800;
+}
+
+.secondary{
+ padding:11px 14px;
+ border-radius:13px;
+ background:var(--card2);
+ color:var(--text);
+ border:1px solid var(--line);
+}
+
+.danger{
+ background:#ef444422;
+ color:#ff6b6b;
+}
+
+.row{
+ display:flex;
+ align-items:center;
+ gap:9px;
+}
+
+.between{
+ justify-content:space-between;
+}
+
+.item{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:17px;
+ padding:14px;
+ margin:9px 0;
+}
+
+.income{
+ border-left:4px solid var(--green);
+}
+
+.expense{
+ border-left:4px solid var(--red);
+}
+
+.amount{
+ font-size:18px;
+ font-weight:800;
+ margin:7px 0;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+
+.empty{
+ text-align:center;
+ padding:30px;
+ color:var(--muted);
+}
+
+.tabs{
+ display:flex;
+ gap:7px;
+ overflow:auto;
+ margin:10px 0;
+}
+
+.tabs button{
+ padding:10px 14px;
+ border:0;
+ border-radius:12px;
+ background:var(--card2);
+ color:var(--muted);
+}
+
+.tabs button.active{
+ background:var(--accent);
+ color:white;
+}
+
+.bottom{
+ position:fixed;
+ z-index:20;
+ bottom:10px;
+ left:50%;
+ transform:translateX(-50%);
+ width:min(96%,740px);
+ display:flex;
+ overflow-x:auto;
+ gap:3px;
+ padding:7px;
+ border-radius:23px;
+ background:#151922ee;
+ backdrop-filter:blur(20px);
+ border:1px solid var(--line);
+}
+
+.bottom button{
+ flex:1;
+ min-width:65px;
+ border:0;
+ border-radius:15px;
+ background:transparent;
+ color:#9299a8;
+ padding:7px 3px;
+ font-size:10px;
+}
+
+.bottom button span{
+ display:block;
+ font-size:20px;
+ margin-bottom:3px;
+}
+
+.bottom button.active{
+ background:var(--accent);
+ color:white;
+}
+
+.search{
+ display:none;
+ margin-bottom:10px;
+}
+
+.search.show{
+ display:block;
+}
+
+.modal{
+ position:fixed;
+ inset:0;
+ z-index:50;
+ background:#0009;
+ display:none;
+ align-items:flex-end;
+}
+
+.modal.show{
+ display:flex;
+}
+
+.sheet{
+ width:min(760px,100%);
+ max-height:90vh;
+ overflow:auto;
+ background:var(--card);
+ border-radius:25px 25px 0 0;
+ padding:20px;
+ margin:auto;
+}
+
+.pinScreen{
+ position:fixed;
+ inset:0;
+ z-index:100;
+ background:var(--bg);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:25px;
+}
+
+.pinBox{
+ width:min(400px,100%);
+ text-align:center;
+}
+
+.logo{
+ font-size:55px;
+}
+
+.pinInput{
+ text-align:center;
+ font-size:30px;
+ letter-spacing:9px;
+}
+
+.small{
+ color:var(--muted);
+ font-size:12px;
+}
+
+.badge{
+ display:inline-block;
+ padding:5px 8px;
+ border-radius:8px;
+ background:var(--card2);
+ color:var(--muted);
+ font-size:12px;
+}
+
+@media(max-width:430px){
+ .two{grid-template-columns:1fr}
+ .bottom button{min-width:58px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN -->
+
+<div id="pinScreen" class="pinScreen">
+
+<div class="pinBox">
+
+<div class="logo">💰</div>
+
+<h1>My Money</h1>
+
+<p id="pinText" class="muted">
+Birinchi kirishda o‘zingiz PIN kod yarating
+</p>
+
+<input
+ id="pin1"
+ class="pinInput"
+ type="password"
+ inputmode="numeric"
+ maxlength="6"
+ placeholder="••••"
+>
+
+<input
+ id="pin2"
+ class="pinInput"
+ type="password"
+ inputmode="numeric"
+ maxlength="6"
+ placeholder="••••"
+ style="display:none;margin-top:10px"
+>
+
+<button
+ id="pinButton"
+ class="primary"
+ onclick="pinEnter()"
+>
+PIN yaratish
+</button>
+
+<p class="small">
+PIN ushbu qurilmada saqlanadi.
+</p>
+
+</div>
+</div>
+
+
+<div class="app">
+
+<header>
+
+<div>
+<h1>My Money</h1>
+<div id="todayText" class="muted"></div>
+</div>
+
+<button class="icon" onclick="lockApp()">🔒</button>
+
+</header>
+
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+<div class="row between">
+<h2>💰 Balans</h2>
+<button class="icon" onclick="toggleHide()" id="hideButton">🔓</button>
+</div>
+
+<div id="balances" class="balanceScroll"></div>
+
+
+<div class="card">
+
+<div class="row between">
+<h3>🔔 Eslatmalar</h3>
+<button class="secondary" onclick="openPage('reminders')">
+Barchasi
+</button>
+</div>
+
+<div id="homeReminders"></div>
+
+</div>
+
+</section>
+
+
+<!-- EXPENSE -->
+
+<section id="expense" class="page">
+
+<header>
+<h2>💸 To‘landi</h2>
+<button class="icon" onclick="toggleSearch('expenseSearch')">🔍</button>
+</header>
+
+<div id="expenseSearch" class="search">
+<input
+ id="expenseQuery"
+ placeholder="Qidirish..."
+ oninput="searchTransactions('expense')"
+>
+</div>
+
+<form onsubmit="addExpense(event)">
+
+<label>Summa</label>
+<input id="exAmount" type="number" min="0" step="any" required>
+
+<div class="two">
+
+<div>
+<label>Valyuta</label>
+<select id="exCurrency">
+<option>UZS</option>
+<option>USD</option>
+<option>RUB</option>
+</select>
+</div>
+
+<div>
+<label>Naqd / Karta</label>
+<select id="exMethod">
+<option>Naqd</option>
+<option>Karta</option>
+</select>
+</div>
+
+</div>
+
+
+<label>Toifa</label>
+
+<select id="exCategory" onchange="categoryFields()">
+<option>🚕 Taxi</option>
+<option>🍔 Ovqat</option>
+<option>🛒 Do‘kon</option>
+<option>📦 Boshqa</option>
+</select>
+
+<div id="categoryExtra"></div>
+
+
+<div class="two">
+
+<div>
+<label>Sana</label>
+<input id="exDate" type="date" required>
+</div>
+
+<div>
+<label>Soat</label>
+<input id="exTime" type="time" required>
+</div>
+
+</div>
+
+<label>Izoh</label>
+<textarea id="exNote" placeholder="Ixtiyoriy"></textarea>
+
+<button class="primary">
+Saqlash
+</button>
+
+</form>
+
+<div id="expenseResults"></div>
+
+</section>
+
+
+<!-- INCOME -->
+
+<section id="income" class="page">
+
+<header>
+
+<h2>💰 Pul tushdi</h2>
+
+<button class="icon" onclick="toggleSearch('incomeSearch')">
+🔍
+</button>
+
+</header>
+
+<div id="incomeSearch" class="search">
+
+<input
+ id="incomeQuery"
+ placeholder="Qidirish..."
+ oninput="searchTransactions('income')"
+>
+
+</div>
+
+
+<form onsubmit="addIncome(event)">
+
+<label>Kimdan?</label>
+<input id="inFrom" required>
+
+<label>Summa</label>
+<input id="inAmount" type="number" min="0" step="any" required>
+
+<div class="two">
+
+<div>
+<label>Valyuta</label>
+<select id="inCurrency">
+<option>UZS</option>
+<option>USD</option>
+<option>RUB</option>
+</select>
+</div>
+
+<div>
+<label>Naqd / Karta</label>
+<select id="inMethod">
+<option>Naqd</option>
+<option>Karta</option>
+</select>
+</div>
+
+</div>
+
+<div class="two">
+
+<div>
+<label>Sana</label>
+<input id="inDate" type="date" required>
+</div>
+
+<div>
+<label>Soat</label>
+<input id="inTime" type="time" required>
+</div>
+
+</div>
+
+<label>Izoh</label>
+<textarea id="inNote"></textarea>
+
+<button class="primary">
+Saqlash
+</button>
+
+</form>
+
+<div id="incomeResults"></div>
+
+</section>
+
+
+<!-- HISTORY -->
+
+<section id="history" class="page">
+
+<header>
+<h2>📜 Tarix</h2>
+<button class="icon" onclick="toggleSearch('historySearch')">🔍</button>
+</header>
+
+<div id="historySearch" class="search">
+
+<input
+ id="historyQuery"
+ placeholder="Masalan: m, Taxi, 50000..."
+ oninput="renderHistory()"
+>
+
+</div>
+
+
+<div class="tabs">
+
+<button class="active" onclick="setPeriod('day',this)">
+Kun
+</button>
+
+<button onclick="setPeriod('month',this)">
+Oy
+</button>
+
+<button onclick="setPeriod('year',this)">
+Yil
+</button>
+
+</div>
+
+
+<div class="two">
+
+<div>
+<label>Davr</label>
+<input id="historyDate" type="date" onchange="renderHistory()">
+</div>
+
+<div>
+<label>Valyuta</label>
+<select id="historyCurrency" onchange="renderHistory()">
+<option>Umumiy</option>
+<option>UZS</option>
+<option>USD</option>
+<option>RUB</option>
+</select>
+</div>
+
+</div>
+
+
+<div id="historyList"></div>
+
+</section>
+
+
+<!-- REMINDERS -->
+
+<section id="reminders" class="page">
+
+<header>
+
+<h2>🔔 Eslatma</h2>
+
+<button class="icon" onclick="toggleSearch('remSearchBox')">
+🔍
+</button>
+
+</header>
+
+<div id="remSearchBox" class="search">
+
+<input
+ id="remQuery"
+ placeholder="Qidirish..."
+ oninput="renderReminders()"
+>
+
+</div>
+
+
+<div class="two">
+
+<select id="remCurrency" onchange="renderReminders()">
+<option>Umumiy</option>
+<option>UZS</option>
+<option>USD</option>
+<option>RUB</option>
+</select>
+
+<button class="primary" style="margin:0" onclick="openModal()">
+➕ Eslatma
+</button>
+
+</div>
+
+
+<div id="reminderList"></div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section id="settings" class="page">
+
+<h2>⚙️ Sozlamalar</h2>
+
+
+<div class="card">
+
+<h3>🎨 Ko‘rinish</h3>
+
+<div class="tabs">
+
+<button onclick="setTheme('dark')">
+🌙 Tungi
+</button>
+
+<button onclick="setTheme('light')">
+☀️ Kunduzgi
+</button>
+
+<button onclick="setTheme('auto')">
+🔄 Avto
+</button>
+
+</div>
+
+
+<label>Til</label>
+
+<select id="language" onchange="changeLanguage(this.value)">
+
+<option value="uz">🇺🇿 O‘zbek</option>
+<option value="en">🇬🇧 English</option>
+<option value="ru">🇷🇺 Русский</option>
+
+</select>
+
+
+<label>Avto bloklash</label>
+
+<select id="autoLock" onchange="saveSettings()">
+
+<option value="0">Darhol</option>
+<option value="1">1 daqiqa</option>
+<option value="5">5 daqiqa</option>
+<option value="15">15 daqiqa</option>
+
+</select>
+
+</div>
+
+
+<!-- STARTING BALANCE -->
+
+<div class="card">
+
+<h3>🏦 O‘zimda bor</h3>
+
+<p class="muted">
+Ilovani boshlaganda mavjud pulingiz.
+Bu oddiy daromad tarixiga kirmaydi.
+</p>
+
+<div id="startingFields"></div>
+
+<button class="primary" onclick="saveStarting()">
+Saqlash
+</button>
+
+</div>
+
+
+<!-- SECURITY -->
+
+<div class="card">
+
+<h3>🔐 Xavfsizlik</h3>
+
+<button class="secondary" onclick="changePin()">
+PIN kodni almashtirish
+</button>
+
+</div>
+
+
+<!-- DATA -->
+
+<div class="card">
+
+<h3>💾 Ma’lumotlar</h3>
+
+<div class="row">
+
+<button class="secondary" onclick="backup()">
+Backup
+</button>
+
+<button class="secondary" onclick="document.getElementById('restore').click()">
+Restore
+</button>
+
+</div>
+
+<input
+ id="restore"
+ type="file"
+ accept=".json"
+ style="display:none"
+ onchange="restoreData(event)"
+>
+
+<button
+ class="primary danger"
+ onclick="deleteAll()"
+>
+Barcha ma’lumotlarni o‘chirish
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h3>🔔 Bildirishnoma</h3>
+
+<button class="secondary" onclick="notifications()">
+Bildirishnomani yoqish
+</button>
+
+</div>
+
+</section>
+
+
+<!-- BOTTOM -->
+
+<nav class="bottom">
+
+<button class="active" onclick="openPage('home')">
+<span>🏠</span>
+Home
+</button>
+
+<button onclick="openPage('expense')">
+<span>💸</span>
+To‘landi
+</button>
+
+<button onclick="openPage('income')">
+<span>💰</span>
+Pul tushdi
+</button>
+
+<button onclick="openPage('settings')">
+<span>⚙️</span>
+Sozlamalar
+</button>
+
+<button onclick="openPage('history')">
+<span>📜</span>
+Tarix
+</button>
+
+<button onclick="openPage('reminders')">
+<span>🔔</span>
+Eslatma
+</button>
+
+</nav>
+
+</div>
+
+
+<!-- REMINDER MODAL -->
+
+<div id="modal" class="modal">
+
+<div class="sheet">
+
+<div class="row between">
+
+<h2>🔔 Yangi eslatma</h2>
+
+<button class="icon" onclick="closeModal()">✕</button>
+
+</div>
+
+
+<form onsubmit="addReminder(event)">
+
+<label>Turi</label>
+
+<select id="remType">
+
+<option value="given">🤝 Qarz berdim</option>
+<option value="taken">🤝 Qarz oldim</option>
+<option value="payment">💳 To‘lov</option>
+
+</select>
+
+
+<label>Kim / Shaxs</label>
+<input id="remPerson" required>
+
+
+<label>Summa</label>
+<input id="remAmount" type="number" min="0" step="any" required>
+
+
+<div class="two">
+
+<div>
+
+<label>Valyuta</label>
+
+<select id="remCur">
+<option>UZS</option>
+<option>USD</option>
+<option>RUB</option>
+</select>
+
+</div>
+
+<div>
+
+<label>Naqd / Karta</label>
+
+<select id="remMethod">
+<option>Naqd</option>
+<option>Karta</option>
+</select>
+
+</div>
+
+</div>
+
+
+<div class="two">
+
+<div>
+
+<label>Sana</label>
+<input id="remDate" type="date" required>
+
+</div>
+
+<div>
+
+<label>Soat</label>
+<input id="remTime" type="time" required>
+
+</div>
+
+</div>
+
+
+<label>Takrorlanish</label>
+
+<select id="remRepeat">
+
+<option value="once">Bir marta</option>
+<option value="monthly">Har oy</option>
+<option value="weekly">Har hafta</option>
+<option value="yearly">Har yil</option>
+
+</select>
+
+
+<label>Izoh</label>
+<textarea id="remNote"></textarea>
+
+
+<button class="primary">
+Saqlash
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+const KEY="MY_MONEY_NEW";
+
+let data=JSON.parse(localStorage.getItem(KEY)||"null") || {
+
+ pin:"",
+
+ hidden:false,
+
+ transactions:[],
+
+ reminders:[],
+
+ starting:{
+  UZS:{cash:0,card:0},
+  USD:{cash:0,card:0},
+  RUB:{cash:0,card:0}
+ },
+
+ settings:{
+  theme:"dark",
+  language:"uz",
+  autoLock:"5"
+ }
+
+};
+
+let period="day";
+let lockTimer;
+
+
+/* =========================
+   SAVE
+========================= */
+
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(data));
+}
+
+
+/* =========================
+   BASIC
+========================= */
+
+function today(){
+ return new Date().toISOString().slice(0,10);
+}
+
+function timeNow(){
+ return new Date().toTimeString().slice(0,5);
+}
+
+function money(n){
+ return Number(n).toLocaleString("en-US",{
+  maximumFractionDigits:2
+ });
+}
+
+function escapeHTML(x){
+ return String(x||"")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;");
+}
+
+
+/* =========================
+   PIN
+========================= */
+
+function initPin(){
+
+ if(data.pin){
+
+  document.getElementById("pinText").textContent=
+  "Kirish uchun PIN kodni kiriting";
+
+  document.getElementById("pinButton").textContent="Kirish";
+
+  document.getElementById("pin2").style.display="none";
+
+ }else{
+
+  document.getElementById("pinText").textContent=
+  "Birinchi kirishda o‘zingiz PIN kod yarating";
+
+  document.getElementById("pinButton").textContent=
+  "PIN yaratish";
+
+  document.getElementById("pin2").style.display="block";
+ }
+
+ document.getElementById("pinScreen").style.display="flex";
+}
+
+
+function pinEnter(){
+
+ let p=document.getElementById("pin1").value;
+
+ if(!/^\d{4,6}$/.test(p)){
+  alert("PIN 4–6 ta raqam bo‘lishi kerak.");
+  return;
+ }
+
+ if(!data.pin){
+
+  let p2=document.getElementById("pin2").value;
+
+  if(p!==p2){
+   alert("PIN kodlar bir xil emas.");
+   return;
+  }
+
+  data.pin=p;
+  save();
+
+  unlock();
+
+ }else{
+
+  if(p===data.pin){
+
+   unlock();
+
+  }else{
+
+   alert("PIN noto‘g‘ri ❌");
+
+  }
+
+ }
+}
+
+
+function unlock(){
+
+ document.getElementById("pin1").value="";
+ document.getElementById("pin2").value="";
+
+ document.getElementById("pinScreen").style.display="none";
+
+ startAutoLock();
+
+ renderAll();
+}
+
+
+function lockApp(){
+
+ document.getElementById("pin1").value="";
+
+ document.getElementById("pinScreen").style.display="flex";
+
+ clearTimeout(lockTimer);
+
+ setTimeout(()=>{
+  document.getElementById("pin1").focus();
+ },100);
+
+}
+
+
+function startAutoLock(){
+
+ clearTimeout(lockTimer);
+
+ let min=Number(data.settings.autoLock);
+
+ if(min>0){
+
+  lockTimer=setTimeout(()=>{
+   lockApp();
+  },min*60000);
+
+ }
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function openPage(id){
+
+ document.querySelectorAll(".page")
+ .forEach(x=>x.classList.remove("active"));
+
+ document.getElementById(id)
+ .classList.add("active");
+
+ let pages=[
+  "home",
+  "expense",
+  "income",
+  "settings",
+  "history",
+  "reminders"
+ ];
+
+ document.querySelectorAll(".bottom button")
+ .forEach(x=>x.classList.remove("active"));
+
+ let i=pages.indexOf(id);
+
+ if(i>=0)
+ document.querySelectorAll(".bottom button")[i]
+ ?.classList.add("active");
+
+ if(id==="history")renderHistory();
+ if(id==="reminders")renderReminders();
+ if(id==="settings")renderSettings();
+
+ startAutoLock();
+}
+
+
+/* =========================
+   BALANCE
+========================= */
+
+function getBalances(){
+
+ let b=JSON.parse(JSON.stringify(data.starting));
+
+ data.transactions.forEach(t=>{
+
+  if(!b[t.currency])return;
+
+  let amount=Number(t.amount);
+
+  if(t.type==="income"){
+
+   b[t.currency][t.method==="Naqd"?"cash":"card"]+=amount;
+
+  }else{
+
+   b[t.currency][t.method==="Naqd"?"cash":"card"]-=amount;
+
+  }
+
+ });
+
+ return b;
+}
+
+
+function renderBalances(){
+
+ let b=getBalances();
+
+ let currencies=[
+  ["🇺🇿","UZS"],
+  ["🇺🇸","USD"],
+  ["🇷🇺","RUB"]
+ ];
+
+ document.getElementById("balances").innerHTML=
+ currencies.map(x=>{
+
+  let cur=x[1];
+
+  let total=b[cur].cash+b[cur].card;
+
+  return`
+
+  <div class="balance">
+
+   <div class="currency">
+    ${x[0]} ${cur}
+   </div>
+
+   <div class="total">
+    ${data.hidden?"••••••":money(total)+" "+cur}
+   </div>
+
+   <div class="two">
+
+    <div class="mini">
+     💵 Naqd
+     <b>
+     ${data.hidden?"••••":money(b[cur].cash)+" "+cur}
+     </b>
+    </div>
+
+    <div class="mini">
+     💳 Karta
+     <b>
+     ${data.hidden?"••••":money(b[cur].card)+" "+cur}
+     </b>
+    </div>
+
+   </div>
+
+  </div>
+
+  `;
+
+ }).join("");
+
+}
+
+
+function toggleHide(){
+
+ data.hidden=!data.hidden;
+
+ document.getElementById("hideButton").textContent=
+ data.hidden?"🔒":"🔓";
+
+ save();
+
+ renderBalances();
+
+}
+
+
+/* =========================
+   EXPENSE
+========================= */
+
+function categoryFields(){
+
+ let c=document.getElementById("exCategory").value;
+
+ let box=document.getElementById("categoryExtra");
+
+ if(c==="🚕 Taxi"){
+
+  box.innerHTML=`
+
+  <div class="two">
+
+   <div>
+    <label>Qayerdan?</label>
+    <input id="cat1">
+   </div>
+
+   <div>
+    <label>Qayerga?</label>
+    <input id="cat2">
+   </div>
+
+  </div>`;
+
+ }
+
+ else if(c==="🍔 Ovqat"){
+
+  box.innerHTML=`
+
+  <label>Tur</label>
+
+  <select id="cat1">
+
+   <option>Suv</option>
+   <option>Ovqat</option>
+   <option>Ichimlik</option>
+   <option>Fast food</option>
+   <option>Boshqa</option>
+
+  </select>`;
+
+ }
+
+ else if(c==="🛒 Do‘kon"){
+
+  box.innerHTML=`
+
+  <label>Tur</label>
+
+  <select id="cat1">
+
+   <option>Kiyim</option>
+   <option>Qurilma</option>
+   <option>Uy jihozlari</option>
+   <option>O‘qish</option>
+   <option>Boshqa</option>
+
+  </select>`;
+
+ }
+
+ else{
+
+  box.innerHTML=`
+
+  <label>Tafsilot</label>
+
+  <input id="cat1" placeholder="Nima uchun?">
+
+  `;
+
+ }
+
+}
+
+
+function getCategoryDetails(){
+
+ let a=document.getElementById("cat1")?.value||"";
+ let b=document.getElementById("cat2")?.value||"";
+
+ if(b)
+ return "Qayerdan: "+a+"; Qayerga: "+b;
+
+ return a;
+}
+
+
+function addExpense(e){
+
+ e.preventDefault();
+
+ data.transactions.push({
+
+  id:Date.now(),
+
+  type:"expense",
+
+  amount:Number(document.getElementById("exAmount").value),
+
+  currency:document.getElementById("exCurrency").value,
+
+  method:document.getElementById("exMethod").value,
+
+  category:document.getElementById("exCategory").value,
+
+  details:getCategoryDetails(),
+
+  date:document.getElementById("exDate").value,
+
+  time:document.getElementById("exTime").value,
+
+  note:document.getElementById("exNote").value
+
+ });
+
+ save();
+
+ e.target.reset();
+
+ document.getElementById("exDate").value=today();
+ document.getElementById("exTime").value=timeNow();
+
+ categoryFields();
+
+ renderAll();
+
+ alert("Saqlandi ✅");
+}
+
+
+/* =========================
+   INCOME
+========================= */
+
+function addIncome(e){
+
+ e.preventDefault();
+
+ data.transactions.push({
+
+  id:Date.now(),
+
+  type:"income",
+
+  amount:Number(document.getElementById("inAmount").value),
+
+  currency:document.getElementById("inCurrency").value,
+
+  method:document.getElementById("inMethod").value,
+
+  category:"Pul tushdi",
+
+  details:document.getElementById("inFrom").value,
+
+  date:document.getElementById("inDate").value,
+
+  time:document.getElementById("inTime").value,
+
+  note:document.getElementById("inNote").value
+
+ });
+
+ save();
+
+ e.target.reset();
+
+ document.getElementById("inDate").value=today();
+ document.getElementById("inTime").value=timeNow();
+
+ renderAll();
+
+ alert("Saqlandi ✅");
+}
+
+
+/* =========================
+   TRANSACTION CARD
+========================= */
+
+function transactionCard(t){
+
+ return`
+
+ <div class="item ${t.type}">
+
+  <div class="row between">
+
+   <b>
+    ${t.type==="income"?"💰":"💸"}
+    ${escapeHTML(t.category)}
+   </b>
+
+   <span class="badge">
+    ${escapeHTML(t.date)}
+    ${escapeHTML(t.time)}
+   </span>
+
+  </div>
+
+  <div class="amount">
+   ${money(t.amount)} ${t.currency}
+  </div>
+
+  <div>
+   ${escapeHTML(t.method)}
+   ·
+   ${escapeHTML(t.details)}
+  </div>
+
+  <div class="muted">
+   ${escapeHTML(t.note)}
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function searchTransactions(type){
+
+ let q=(type==="income"
+  ?document.getElementById("incomeQuery").value
+  :document.getElementById("expenseQuery").value)
+  .toLowerCase();
+
+ let list=data.transactions.filter(t=>
+  t.type===type &&
+  (
+   !q ||
+   Object.values(t)
+   .join(" ")
+   .toLowerCase()
+   .includes(q)
+  )
+ );
+
+ document.getElementById(
+  type==="income"?"incomeResults":"expenseResults"
+ ).innerHTML=
+ list.map(transactionCard).join("");
+
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function setPeriod(p,btn){
+
+ period=p;
+
+ document.querySelectorAll(".tabs button")
+ .forEach(x=>x.classList.remove("active"));
+
+ btn.classList.add("active");
+
+ let d=document.getElementById("historyDate");
+
+ if(p==="day"){
+
+  d.type="date";
+  d.value=today();
+
+ }
+
+ if(p==="month"){
+
+  d.type="month";
+  d.value=today().slice(0,7);
+
+ }
+
+ if(p==="year"){
+
+  d.type="number";
+  d.value=new Date().getFullYear();
+
+ }
+
+ renderHistory();
+}
+
+
+function renderHistory(){
+
+ let d=document.getElementById("historyDate").value;
+ let cur=document.getElementById("historyCurrency").value;
+ let q=document.getElementById("historyQuery").value.toLowerCase();
+
+ let list=data.transactions.filter(t=>{
+
+  if(cur!=="Umumiy" && t.currency!==cur)
+   return false;
+
+  if(q && !Object.values(t).join(" ").toLowerCase().includes(q))
+   return false;
+
+  if(period==="day")
+   return t.date===d;
+
+  if(period==="month")
+   return t.date.slice(0,7)===d;
+
+  if(period==="year")
+   return t.date.slice(0,4)===String(d);
+
+ });
+
+ list.sort((a,b)=>
+  (b.date+b.time).localeCompare(a.date+a.time)
+ );
+
+ document.getElementById("historyList").innerHTML=
+ list.length
+ ?list.map(transactionCard).join("")
+ :`<div class="empty">Ma’lumot topilmadi</div>`;
+
+}
+
+
+/* =========================
+   REMINDERS
+========================= */
+
+function openModal(){
+
+ document.getElementById("modal").classList.add("show");
+
+ document.getElementById("remDate").value=today();
+ document.getElementById("remTime").value=timeNow();
+
+}
+
+
+function closeModal(){
+
+ document.getElementById("modal").classList.remove("show");
+
+}
+
+
+function addReminder(e){
+
+ e.preventDefault();
+
+ data.reminders.push({
+
+  id:Date.now(),
+
+  type:document.getElementById("remType").value,
+
+  person:document.getElementById("remPerson").value,
+
+  amount:Number(document.getElementById("remAmount").value),
+
+  currency:document.getElementById("remCur").value,
+
+  method:document.getElementById("remMethod").value,
+
+  date:document.getElementById("remDate").value,
+
+  time:document.getElementById("remTime").value,
+
+  repeat:document.getElementById("remRepeat").value,
+
+  note:document.getElementById("remNote").value,
+
+  paid:false
+
+ });
+
+ save();
+
+ e.target.reset();
+
+ closeModal();
+
+ renderAll();
+
+ alert("Eslatma saqlandi 🔔");
+
+}
+
+
+function reminderCard(r){
+
+ let title=
+ r.type==="given"
+ ?"🤝 Qarz berdim":
+ r.type==="taken"
+ ?"🤝 Qarz oldim":
+ "💳 To‘lov";
+
+ return`
+
+ <div class="item">
+
+  <div class="row between">
+
+   <b>${title}</b>
+
+   <button class="secondary"
+    onclick="payReminder(${r.id})">
+
+    ${r.paid?"✅ To‘landi":"To‘landi"}
+
+   </button>
+
+  </div>
+
+  <div>
+   ${escapeHTML(r.person)}
+  </div>
+
+  <div class="amount">
+   ${money(r.amount)} ${r.currency}
+  </div>
+
+  <div class="muted">
+   ${r.date} · ${r.time} · ${r.method}
+  </div>
+
+  <div class="muted">
+   ${escapeHTML(r.note)}
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+function renderReminders(){
+
+ let q=(document.getElementById("remQuery")?.value||"")
+ .toLowerCase();
+
+ let cur=document.getElementById("remCurrency")?.value||"Umumiy";
+
+ let list=data.reminders.filter(r=>
+
+  (cur==="Umumiy"||r.currency===cur) &&
+
+  (!q||Object.values(r)
+  .join(" ")
+  .toLowerCase()
+  .includes(q))
+
+ );
+
+ document.getElementById("reminderList").innerHTML=
+ list.length
+ ?list.map(reminderCard).join("")
+ :`<div class="empty">Eslatma yo‘q</div>`;
+
+}
+
+
+function payReminder(id){
+
+ let r=data.reminders.find(x=>x.id===id);
+
+ if(!r || r.paid)return;
+
+ let type=
+ r.type==="taken"?"income":"expense";
+
+ data.transactions.push({
+
+  id:Date.now(),
+
+  type:type,
+
+  amount:r.amount,
+
+  currency:r.currency,
+
+  method:r.method,
+
+  category:r.type==="payment"
+   ?"💳 To‘lov"
+   :"🤝 Qarz",
+
+  details:r.person,
+
+  date:today(),
+
+  time:timeNow(),
+
+  note:r.note
+
+ });
+
+
+ if(r.repeat==="once"){
+
+  r.paid=true;
+
+ }else{
+
+  let d=new Date(r.date+"T"+r.time);
+
+  if(r.repeat==="monthly")
+   d.setMonth(d.getMonth()+1);
+
+  if(r.repeat==="weekly")
+   d.setDate(d.getDate()+7);
+
+  if(r.repeat==="yearly")
+   d.setFullYear(d.getFullYear()+1);
+
+  r.date=d.toISOString().slice(0,10);
+
+  r.paid=false;
+
+ }
+
+ save();
+
+ renderAll();
+
+ alert("To‘landi va balans yangilandi ✅");
+
+}
+
+
+/* =========================
+   HOME REMINDERS
+========================= */
+
+function renderHomeReminders(){
+
+ let list=data.reminders
+ .filter(x=>!x.paid)
+ .sort((a,b)=>
+  (a.date+a.time).localeCompare(b.date+b.time)
+ )
+ .slice(0,6);
+
+ document.getElementById("homeReminders").innerHTML=
+ list.length
+ ?list.map(reminderCard).join("")
+ :`<div class="empty">Faol eslatma yo‘q</div>`;
+
+}
+
+
+/* =========================
+   STARTING MONEY
+========================= */
+
+function renderStarting(){
+
+ let currencies=["UZS","USD","RUB"];
+
+ document.getElementById("startingFields").innerHTML=
+ currencies.map(c=>`
+
+ <div class="card">
+
+  <b>${c}</b>
+
+  <div class="two">
+
+   <div>
+    <label>💵 Naqd</label>
+    <input
+     id="start_${c}_cash"
+     type="number"
+     step="any"
+     value="${data.starting[c].cash}"
+    >
+   </div>
+
+   <div>
+    <label>💳 Karta</label>
+    <input
+     id="start_${c}_card"
+     type="number"
+     step="any"
+     value="${data.starting[c].card}"
+    >
+   </div>
+
+  </div>
+
+ </div>
+
+ `).join("");
+
+}
+
+
+function saveStarting(){
+
+ ["UZS","USD","RUB"].forEach(c=>{
+
+  data.starting[c].cash=
+   Number(document.getElementById(`start_${c}_cash`).value)||0;
+
+  data.starting[c].card=
+   Number(document.getElementById(`start_${c}_card`).value)||0;
+
+ });
+
+ save();
+
+ renderBalances();
+
+ alert("Boshlang‘ich balans saqlandi ✅");
+
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function setTheme(theme){
+
+ data.settings.theme=theme;
+
+ if(theme==="dark")
+  document.body.classList.remove("light");
+
+ if(theme==="light")
+  document.body.classList.add("light");
+
+ if(theme==="auto"){
+
+  document.body.classList.toggle(
+   "light",
+   matchMedia("(prefers-color-scheme:light)").matches
+  );
+
+ }
+
+ save();
+
+}
+
+
+function saveSettings(){
+
+ data.settings.autoLock=
+ document.getElementById("autoLock").value;
+
+ save();
+
+ startAutoLock();
+
+}
+
+
+/* =========================
+   LANGUAGE
+========================= */
+
+const translations={
+
+ uz:{
+  search:"Qidirish...",
+  save:"Saqlash",
+  all:"Barchasi"
+ },
+
+ en:{
+  search:"Search...",
+  save:"Save",
+  all:"All"
+ },
+
+ ru:{
+  search:"Поиск...",
+  save:"Сохранить",
+  all:"Все"
+ }
+
+};
+
+
+function changeLanguage(lang){
+
+ data.settings.language=lang;
+
+ save();
+
+ let t=translations[lang];
+
+ document.querySelectorAll(
+  'input[placeholder="Qidirish..."]'
+ ).forEach(x=>x.placeholder=t.search);
+
+}
+
+
+/* =========================
+   PIN CHANGE
+========================= */
+
+function changePin(){
+
+ let p=prompt("Yangi PIN (4–6 raqam):");
+
+ if(!/^\d{4,6}$/.test(p||"")){
+
+  alert("PIN noto‘g‘ri");
+
+  return;
+
+ }
+
+ let p2=prompt("PINni qayta kiriting:");
+
+ if(p!==p2){
+
+  alert("PINlar mos emas");
+
+  return;
+
+ }
+
+ data.pin=p;
+
+ save();
+
+ alert("PIN o‘zgartirildi 🔐");
+
+}
+
+
+/* =========================
+   BACKUP
+========================= */
+
+function backup(){
+
+ let blob=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ let a=document.createElement("a");
+
+ a.href=URL.createObjectURL(blob);
+
+ a.download="my-money-backup.json";
+
+ a.click();
+
+}
+
+
+/* =========================
+   RESTORE
+========================= */
+
+function restoreData(e){
+
+ let file=e.target.files[0];
+
+ if(!file)return;
+
+ let reader=new FileReader();
+
+ reader.onload=()=>{
+
+  try{
+
+   let x=JSON.parse(reader.result);
+
+   if(!x.transactions || !x.starting)
+    throw new Error();
+
+   data=x;
+
+   save();
+
+   location.reload();
+
+  }catch{
+
+   alert("Backup fayli noto‘g‘ri ❌");
+
+  }
+
+ };
+
+ reader.readAsText(file);
+
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+function deleteAll(){
+
+ if(!confirm(
+  "Barcha ma’lumotlar o‘chiriladi. Ishonchingiz komilmi?"
+ ))return;
+
+ localStorage.removeItem(KEY);
+
+ location.reload();
+
+}
+
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+async function notifications(){
+
+ if(!("Notification" in window)){
+
+  alert("Bu brauzer bildirishnomani qo‘llamaydi.");
+
+  return;
+
+ }
+
+ let p=await Notification.requestPermission();
+
+ if(p==="granted")
+  alert("Bildirishnomalar yoqildi 🔔");
+ else
+  alert("Ruxsat berilmadi.");
+
+}
+
+
+/* =========================
+   SEARCH TOGGLE
+========================= */
+
+function toggleSearch(id){
+
+ document.getElementById(id)
+ .classList.toggle("show");
+
+}
+
+
+/* =========================
+   SETTINGS RENDER
+========================= */
+
+function renderSettings(){
+
+ document.getElementById("language").value=
+ data.settings.language;
+
+ document.getElementById("autoLock").value=
+ data.settings.autoLock;
+
+ renderStarting();
+
+}
+
+
+/* =========================
+   ALL RENDER
+========================= */
+
+function renderAll(){
+
+ renderBalances();
+
+ renderHomeReminders();
+
+ renderReminders();
+
+ renderStarting();
+
+ renderHistory();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById("exDate").value=today();
+document.getElementById("exTime").value=timeNow();
+
+document.getElementById("inDate").value=today();
+document.getElementById("inTime").value=timeNow();
+
+document.getElementById("historyDate").value=today();
+
+categoryFields();
+
+setTheme(data.settings.theme);
+
+document.getElementById("todayText").textContent=
+ new Date().toLocaleDateString(
+  "uz-UZ",
+  {
+   weekday:"long",
+   day:"numeric",
+   month:"long"
+  }
+);
+
+initPin();
+
+</script>
+
+</body>
+</html>
