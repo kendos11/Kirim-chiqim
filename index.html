@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Money">
+<title>My Money</title>
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+body{background:#080a0f;color:#fff;transition:.25s}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+:root{
+ --bg:#080a0f;
+ --card:#141720;
+ --card2:#10131a;
+ --border:#282e3b;
+ --text:#fff;
+ --muted:#858c9c;
+ --input:#0c0f15;
+ --green:#45dda0;
+ --red:#ff6477;
+}
+
+body.light{
+ --bg:#f4f5f8;
+ --card:#fff;
+ --card2:#fff;
+ --border:#dfe2e8;
+ --text:#111;
+ --muted:#697180;
+ --input:#f1f3f6;
+}
+
+body{background:var(--bg);color:var(--text)}
+
+.app{
+ max-width:760px;
+ margin:auto;
+ min-height:100vh;
+ padding:20px 16px 115px;
+}
+
+.page{display:none;animation:fade .2s}
+.page.active{display:block}
+
+@keyframes fade{
+ from{opacity:.3;transform:translateY(5px)}
+ to{opacity:1;transform:none}
+}
+
+/* PIN */
+#pinScreen{
+ position:fixed;
+ inset:0;
+ z-index:9999;
+ background:var(--bg);
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ padding:20px;
+}
+
+.pinBox{
+ width:100%;
+ max-width:380px;
+ text-align:center;
+}
+
+.logo{font-size:52px}
+.pinBox h1{font-size:32px;margin:8px 0}
+.pinBox p{color:var(--muted);font-size:18px}
+
+.pinDots{
+ display:flex;
+ justify-content:center;
+ gap:13px;
+ margin:28px 0;
+}
+
+.dot{
+ width:13px;
+ height:13px;
+ border-radius:50%;
+ background:#292e39;
+}
+
+.dot.active{background:var(--text)}
+
+.pinPad{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:12px;
+}
+
+.pinBtn{
+ height:65px;
+ border:0;
+ border-radius:20px;
+ background:var(--card);
+ color:var(--text);
+ font-size:22px;
+ border:1px solid var(--border);
+}
+
+.pinBtn:active{transform:scale(.95)}
+
+.top{
+ display:flex;
+ justify-content:flex-end;
+}
+
+.lockBtn{
+ width:48px;
+ height:48px;
+ border:0;
+ border-radius:50%;
+ background:var(--card);
+ border:1px solid var(--border);
+ font-size:22px;
+}
+
+/* HOME */
+.balance{
+ text-align:center;
+ padding:28px 0 25px;
+}
+
+.balance small{
+ color:var(--muted);
+ font-size:14px;
+ letter-spacing:.8px;
+}
+
+.balanceRow{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:9px;
+}
+
+#balance{
+ font-size:38px;
+ font-weight:850;
+ margin-top:7px;
+}
+
+.balanceLock{
+ border:0;
+ background:none;
+ color:var(--muted);
+ font-size:20px;
+}
+
+.sectionTitle{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:5px 0 13px;
+}
+
+.sectionTitle h2{
+ margin:0;
+ font-size:20px;
+}
+
+.count{
+ color:var(--muted);
+}
+
+.reminders{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
+}
+
+.reminder{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:15px;
+ min-height:112px;
+}
+
+.reminderIcon{font-size:23px}
+.reminder strong{display:block;margin-top:7px}
+.reminder span{
+ display:block;
+ color:var(--muted);
+ font-size:12px;
+ margin-top:5px;
+}
+
+.moneyCards{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+ margin-top:16px;
+}
+
+.moneyCard{
+ background:var(--card2);
+ border-radius:20px;
+ padding:17px;
+ border:1px solid transparent;
+}
+
+.moneyCard small{color:var(--muted)}
+.moneyCard strong{
+ display:block;
+ margin-top:8px;
+ font-size:19px;
+}
+
+.income{color:var(--green)!important}
+.expense{color:var(--red)!important}
+
+/* HEAD */
+.pageHead{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ margin:8px 0 20px;
+}
+
+.pageHead h1{
+ font-size:29px;
+ margin:0;
+}
+
+/* FORM */
+.formCard{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:25px;
+ padding:18px;
+}
+
+label{
+ display:block;
+ color:var(--muted);
+ font-size:14px;
+ margin:14px 0 7px;
+}
+
+input,select,textarea{
+ width:100%;
+ border:1px solid var(--border);
+ background:var(--input);
+ color:var(--text);
+ border-radius:16px;
+ padding:14px;
+ outline:none;
+ appearance:auto;
+}
+
+input:focus,select:focus,textarea:focus{
+ border-color:#667085;
+}
+
+textarea{
+ min-height:85px;
+ resize:none;
+}
+
+.method{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+
+.method button{
+ padding:14px;
+ border-radius:16px;
+ border:1px solid var(--border);
+ background:var(--input);
+ color:var(--muted);
+}
+
+.method button.selected{
+ background:var(--text);
+ color:var(--bg);
+}
+
+.saveBtn{
+ width:100%;
+ margin-top:20px;
+ padding:16px;
+ border:0;
+ border-radius:17px;
+ background:var(--text);
+ color:var(--bg);
+ font-weight:800;
+}
+
+/* HISTORY */
+.filterCard{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:23px;
+ padding:17px;
+}
+
+.summary{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+ margin:14px 0;
+}
+
+.summaryCard{
+ background:var(--card);
+ border-radius:19px;
+ padding:15px;
+}
+
+.summaryCard small{color:var(--muted)}
+.summaryCard strong{
+ display:block;
+ margin-top:6px;
+ font-size:18px;
+}
+
+.historyItem{
+ background:var(--card);
+ border:1px solid transparent;
+ border-radius:20px;
+ padding:15px;
+ margin-bottom:10px;
+ display:flex;
+ justify-content:space-between;
+ gap:15px;
+}
+
+.historyName{font-weight:750}
+.historyMeta{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:5px;
+ line-height:1.5;
+}
+
+.empty{
+ text-align:center;
+ color:var(--muted);
+ padding:40px 10px;
+}
+
+/* REMINDERS */
+.reminderBig{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:21px;
+ padding:16px;
+ margin-bottom:10px;
+}
+
+.reminderTop{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+}
+
+.reminderActions{
+ display:flex;
+ gap:8px;
+ margin-top:12px;
+}
+
+.smallBtn{
+ border:1px solid var(--border);
+ background:var(--input);
+ color:var(--text);
+ border-radius:12px;
+ padding:9px 12px;
+}
+
+.addBtn{
+ width:100%;
+ border:1px dashed #596172;
+ background:transparent;
+ color:var(--text);
+ padding:14px;
+ border-radius:16px;
+ margin-bottom:14px;
+}
+
+/* SETTINGS */
+.settingGroup{
+ margin-bottom:18px;
+}
+
+.settingTitle{
+ color:var(--muted);
+ font-size:13px;
+ margin:0 0 8px 4px;
+}
+
+.setting{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:15px;
+ margin-bottom:8px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+}
+
+.setting button,.setting select{
+ width:auto;
+ padding:9px 12px;
+ border-radius:12px;
+}
+
+.danger{
+ color:var(--red)!important;
+}
+
+.fileInput{display:none}
+
+/* NAV */
+.nav{
+ position:fixed;
+ left:10px;
+ right:10px;
+ bottom:10px;
+ max-width:740px;
+ margin:auto;
+ height:74px;
+ z-index:100;
+ background:rgba(20,23,32,.96);
+ border:1px solid var(--border);
+ border-radius:25px;
+ display:flex;
+ overflow-x:auto;
+ backdrop-filter:blur(22px);
+ -webkit-backdrop-filter:blur(22px);
+}
+
+body.light .nav{
+ background:rgba(255,255,255,.94);
+}
+
+.nav button{
+ flex:1 0 16.66%;
+ min-width:76px;
+ border:0;
+ background:none;
+ color:#7d8493;
+ font-size:10px;
+ white-space:nowrap;
+}
+
+.nav button span{
+ display:block;
+ font-size:20px;
+ margin-bottom:3px;
+}
+
+.nav button.active{
+ color:var(--text);
+}
+
+.toast{
+ position:fixed;
+ left:50%;
+ bottom:95px;
+ transform:translateX(-50%);
+ background:var(--text);
+ color:var(--bg);
+ padding:12px 18px;
+ border-radius:14px;
+ font-weight:700;
+ z-index:10000;
+ display:none;
+}
+
+@media(max-width:390px){
+ #balance{font-size:31px}
+ .pageHead h1{font-size:26px}
+ .nav button{min-width:70px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN -->
+<div id="pinScreen">
+ <div class="pinBox">
+  <div class="logo">💰</div>
+  <h1>My Money</h1>
+  <p id="pinText">PIN kodni kiriting</p>
+
+  <div class="pinDots">
+   <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+   <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+  </div>
+
+  <div class="pinPad">
+   <button class="pinBtn" onclick="pinInput('1')">1</button>
+   <button class="pinBtn" onclick="pinInput('2')">2</button>
+   <button class="pinBtn" onclick="pinInput('3')">3</button>
+   <button class="pinBtn" onclick="pinInput('4')">4</button>
+   <button class="pinBtn" onclick="pinInput('5')">5</button>
+   <button class="pinBtn" onclick="pinInput('6')">6</button>
+   <button class="pinBtn" onclick="pinInput('7')">7</button>
+   <button class="pinBtn" onclick="pinInput('8')">8</button>
+   <button class="pinBtn" onclick="pinInput('9')">9</button>
+   <button class="pinBtn" style="grid-column:2" onclick="pinInput('0')">0</button>
+   <button class="pinBtn" onclick="backPin()">⌫</button>
+  </div>
+ </div>
+</div>
+
+<div class="app">
+
+<!-- HOME -->
+<section id="home" class="page active">
+
+ <div class="top">
+  <button class="lockBtn" id="balanceLock" onclick="toggleBalance()">🔒</button>
+ </div>
+
+ <div class="balance">
+  <small>UMUMIY BALANS</small>
+  <div class="balanceRow">
+   <div id="balance">0 so'm</div>
+  </div>
+ </div>
+
+ <div class="sectionTitle">
+  <h2>🔔 Eslatmalar</h2>
+  <span class="count" id="homeReminderCount">0</span>
+ </div>
+
+ <div id="homeReminders" class="reminders"></div>
+
+ <div class="moneyCards">
+  <div class="moneyCard">
+   <small>💵 CASH</small>
+   <strong id="cashBalance">0 so'm</strong>
+  </div>
+  <div class="moneyCard">
+   <small>💳 CARD</small>
+   <strong id="cardBalance">0 so'm</strong>
+  </div>
+ </div>
+
+</section>
+
+<!-- EXPENSE -->
+<section id="expense" class="page">
+ <div class="pageHead">
+  <span>💸</span><h1>To‘landi</h1>
+ </div>
+
+ <div class="formCard">
+
+  <label>Shaxs</label>
+  <input id="expensePerson" placeholder="Kimga to‘landi?">
+
+  <label>Summa</label>
+  <input id="expenseAmount" type="number" inputmode="decimal" placeholder="0">
+
+  <label>Kategoriya</label>
+  <select id="expenseCategory">
+   <option value="Taxi">🚕 Taxi</option>
+   <option value="Ovqat">🍔 Ovqat</option>
+   <option value="Do‘kon">🛒 Do‘kon</option>
+   <option value="Boshqa">📦 Boshqa</option>
+  </select>
+
+  <div id="expenseExtra"></div>
+
+  <label>To‘lov turi</label>
+  <div class="method">
+   <button id="expenseCash" onclick="chooseMethod('expense','cash')">💵 Cash</button>
+   <button id="expenseCard" onclick="chooseMethod('expense','card')">💳 Card</button>
+  </div>
+
+  <label>Sana</label>
+  <input id="expenseDate" type="date">
+
+  <label>Soat</label>
+  <input id="expenseTime" type="time">
+
+  <label>Izoh</label>
+  <textarea id="expenseNote" placeholder="Ixtiyoriy..."></textarea>
+
+  <button class="saveBtn" onclick="saveExpense()">SAQLASH</button>
+ </div>
+</section>
+
+<!-- INCOME -->
+<section id="incomePage" class="page">
+ <div class="pageHead">
+  <span>💰</span><h1>Pul tushdi</h1>
+ </div>
+
+ <div class="formCard">
+
+  <label>Shaxs</label>
+  <input id="incomePerson" placeholder="Kimdan pul tushdi?">
+
+  <label>Summa</label>
+  <input id="incomeAmount" type="number" inputmode="decimal" placeholder="0">
+
+  <label>Qabul qilish</label>
+  <div class="method">
+   <button id="incomeCash" onclick="chooseMethod('income','cash')">💵 Cash</button>
+   <button id="incomeCard" onclick="chooseMethod('income','card')">💳 Card</button>
+  </div>
+
+  <label>Sana</label>
+  <input id="incomeDate" type="date">
+
+  <label>Soat</label>
+  <input id="incomeTime" type="time">
+
+  <label>Izoh</label>
+  <textarea id="incomeNote" placeholder="Ixtiyoriy..."></textarea>
+
+  <button class="saveBtn" onclick="saveIncome()">PULNI SAQLASH</button>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+ <div class="pageHead">
+  <span>⚙️</span><h1>Sozlamalar</h1>
+ </div>
+
+ <div class="settingGroup">
+  <div class="settingTitle">KO‘RINISH</div>
+
+  <div class="setting">
+   <span>🎨 Rejim</span>
+   <select id="themeSelect" onchange="setTheme(this.value)">
+    <option value="dark">🌙 Night</option>
+    <option value="light">☀️ Day</option>
+    <option value="auto">🔄 Auto</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="settingGroup">
+  <div class="settingTitle">TIL</div>
+
+  <div class="setting">
+   <span>🌐 Til</span>
+   <select id="languageSelect" onchange="setLanguage(this.value)">
+    <option value="uz">🇺🇿 Uzbek</option>
+    <option value="en">🇬🇧 English</option>
+    <option value="ru">🇷🇺 Russian</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="settingGroup">
+  <div class="settingTitle">XAVFSIZLIK</div>
+
+  <div class="setting">
+   <span>🔐 PIN kod</span>
+   <button onclick="changePin()">O‘zgartirish</button>
+  </div>
+
+  <div class="setting">
+   <span>⏱ Auto-lock</span>
+   <select id="autoLockSelect" onchange="setAutoLock(this.value)">
+    <option value="0">Darhol</option>
+    <option value="1">1 daqiqa</option>
+    <option value="5">5 daqiqa</option>
+    <option value="15">15 daqiqa</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="settingGroup">
+  <div class="settingTitle">MA’LUMOTLAR</div>
+
+  <div class="setting">
+   <span>💾 Backup</span>
+   <button onclick="backupData()">Yuklash</button>
+  </div>
+
+  <div class="setting">
+   <span>♻️ Restore</span>
+   <label style="margin:0">
+    <button onclick="document.getElementById('restoreFile').click()">Tiklash</button>
+    <input id="restoreFile" class="fileInput" type="file" accept=".json" onchange="restoreData(event)">
+   </label>
+  </div>
+
+  <div class="setting">
+   <span>🔔 Bildirishnomalar</span>
+   <button onclick="enableNotifications()">Yoqish</button>
+  </div>
+
+  <div class="setting">
+   <span class="danger">🗑 Barcha ma’lumotni o‘chirish</span>
+   <button class="danger" onclick="deleteAllData()">O‘chirish</button>
+  </div>
+ </div>
+</section>
+
+<!-- HISTORY -->
+<section id="history" class="page">
+ <div class="pageHead">
+  <span>📜</span><h1>Tarix</h1>
+ </div>
+
+ <div class="filterCard">
+
+  <label>Davr</label>
+  <select id="historyPeriod" onchange="changeHistoryPeriod()">
+   <option value="day">Kunlik</option>
+   <option value="month">Oylik</option>
+   <option value="year">Yillik</option>
+  </select>
+
+  <div id="historyFilters"></div>
+
+ </div>
+
+ <div id="historySummary"></div>
+ <div id="historyList"></div>
+</section>
+
+<!-- REMINDERS -->
+<section id="remindersPage" class="page">
+ <div class="pageHead">
+  <span>🔔</span><h1>Eslatmalar</h1>
+ </div>
+
+ <button class="addBtn" onclick="showReminderForm()">＋ Yangi eslatma</button>
+
+ <div id="reminderFormBox" style="display:none">
+  <div class="formCard">
+
+   <label>Turi</label>
+   <select id="reminderType">
+    <option value="debt_given">🤝 Qarz berdim</option>
+    <option value="debt_taken">🤝 Qarz oldim</option>
+    <option value="payment">💳 To‘lov</option>
+   </select>
+
+   <label>Shaxs / nomi</label>
+   <input id="reminderPerson" placeholder="Kim bilan? Masalan: Ali">
+
+   <label>Summa</label>
+   <input id="reminderAmount" type="number" inputmode="decimal" placeholder="0">
+
+   <label>Cash / Card</label>
+   <div class="method">
+    <button id="reminderCash" onclick="chooseMethod('reminder','cash')">💵 Cash</button>
+    <button id="reminderCard" onclick="chooseMethod('reminder','card')">💳 Card</button>
+   </div>
+
+   <label>To‘lanishi kerak bo‘lgan sana</label>
+   <input id="reminderDate" type="date">
+
+   <label>Soat</label>
+   <input id="reminderTime" type="time">
+
+   <label>Izoh</label>
+   <textarea id="reminderNote" placeholder="Ixtiyoriy..."></textarea>
+
+   <button class="saveBtn" onclick="saveReminder()">ESLATMANI SAQLASH</button>
+  </div>
+ </div>
+
+ <div id="reminderList" style="margin-top:15px"></div>
+</section>
+
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+
+ <button class="active" onclick="showPage('home',this)">
+  <span>🏠</span>Home
+ </button>
+
+ <button onclick="showPage('expense',this)">
+  <span>💸</span>To‘landi
+ </button>
+
+ <button onclick="showPage('incomePage',this)">
+  <span>💰</span>Pul tushdi
+ </button>
+
+ <button onclick="showPage('settings',this)">
+  <span>⚙️</span>Sozlamalar
+ </button>
+
+ <button onclick="showPage('history',this)">
+  <span>📜</span>Tarix
+ </button>
+
+ <button onclick="showPage('remindersPage',this)">
+  <span>🔔</span>Eslatma
+ </button>
+
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* =========================
+   DATA
+========================= */
+
+let transactions =
+ JSON.parse(localStorage.getItem("mm_transactions") || "[]");
+
+let reminders =
+ JSON.parse(localStorage.getItem("mm_reminders") || "[]");
+
+let settings =
+ JSON.parse(localStorage.getItem("mm_settings") || "{}");
+
+let pinCode =
+ localStorage.getItem("mm_pin") || "1234";
+
+let enteredPin="";
+let balanceVisible=true;
+
+let expenseMethod="";
+let incomeMethod="";
+let reminderMethod="";
+
+let autoLockTimer=null;
+
+/* =========================
+   SAVE
+========================= */
+
+function saveAll(){
+ localStorage.setItem("mm_transactions",JSON.stringify(transactions));
+ localStorage.setItem("mm_reminders",JSON.stringify(reminders));
+ localStorage.setItem("mm_settings",JSON.stringify(settings));
+}
+
+/* =========================
+   HELPERS
+========================= */
+
+function money(n){
+ return Number(n||0).toLocaleString("uz-UZ")+" so'm";
+}
+
+function nowDate(){
+ const d=new Date();
+ const y=d.getFullYear();
+ const m=String(d.getMonth()+1).padStart(2,"0");
+ const day=String(d.getDate()).padStart(2,"0");
+ return `${y}-${m}-${day}`;
+}
+
+function nowTime(){
+ const d=new Date();
+ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+
+function setDefaultDateTime(){
+ document.getElementById("expenseDate").value=nowDate();
+ document.getElementById("expenseTime").value=nowTime();
+
+ document.getElementById("incomeDate").value=nowDate();
+ document.getElementById("incomeTime").value=nowTime();
+
+ document.getElementById("reminderDate").value=nowDate();
+ document.getElementById("reminderTime").value=nowTime();
+}
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(text){
+ const el=document.getElementById("toast");
+ el.textContent=text;
+ el.style.display="block";
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>el.style.display="none",1800);
+}
+
+/* =========================
+   PIN
+========================= */
+
+function updateDots(){
+ document.querySelectorAll(".dot").forEach((d,i)=>{
+  d.classList.toggle("active",i<enteredPin.length);
+ });
+}
+
+function pinInput(n){
+
+ if(enteredPin.length>=6)return;
+
+ enteredPin+=n;
+ updateDots();
+
+ if(enteredPin===pinCode){
+  document.getElementById("pinScreen").style.display="none";
+  enteredPin="";
+  updateDots();
+  startAutoLock();
+  return;
+ }
+
+ if(enteredPin.length===pinCode.length){
+  document.getElementById("pinText").textContent="PIN noto‘g‘ri";
+
+  setTimeout(()=>{
+   enteredPin="";
+   updateDots();
+   document.getElementById("pinText").textContent="PIN kodni kiriting";
+  },700);
+ }
+}
+
+function backPin(){
+ enteredPin=enteredPin.slice(0,-1);
+ updateDots();
+}
+
+function lockApp(){
+ document.getElementById("pinScreen").style.display="flex";
+ enteredPin="";
+ updateDots();
+}
+
+function changePin(){
+
+ let old=prompt("Eski PIN:");
+ if(old!==pinCode){
+  alert("Eski PIN noto‘g‘ri");
+  return;
+ }
+
+ let p1=prompt("Yangi PIN (faqat 4-6 raqam):");
+ if(!/^\d{4,6}$/.test(p1)){
+  alert("PIN 4-6 ta raqam bo‘lishi kerak");
+  return;
+ }
+
+ let p2=prompt("Yangi PINni yana kiriting:");
+ if(p1!==p2){
+  alert("PINlar bir xil emas");
+  return;
+ }
+
+ pinCode=p1;
+ localStorage.setItem("mm_pin",pinCode);
+ toast("PIN o‘zgartirildi ✅");
+}
+
+/* =========================
+   BALANCE LOCK
+========================= */
+
+function toggleBalance(){
+ balanceVisible=!balanceVisible;
+ updateDashboard();
+}
+
+function updateDashboard(){
+
+ let total=0,cash=0,card=0;
+
+ transactions.forEach(t=>{
+  const v=t.type==="income"?Number(t.amount):-Number(t.amount);
+  total+=v;
+
+  if(t.method==="cash")cash+=v;
+  if(t.method==="card")card+=v;
+ });
+
+ document.getElementById("balance").textContent=
+  balanceVisible?money(total):"••••••";
+
+ document.getElementById("cashBalance").textContent=
+  balanceVisible?money(cash):"••••••";
+
+ document.getElementById("cardBalance").textContent=
+  balanceVisible?money(card):"••••••";
+
+ document.getElementById("balanceLock").textContent=
+  balanceVisible?"🔓":"🔒";
+
+ renderHomeReminders();
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showPage(id,btn){
+
+ document.querySelectorAll(".page")
+ .forEach(p=>p.classList.remove("active"));
+
+ document.getElementById(id).classList.add("active");
+
+ document.querySelectorAll(".nav button")
+ .forEach(b=>b.classList.remove("active"));
+
+ btn.classList.add("active");
+
+ if(id==="home")updateDashboard();
+ if(id==="history")renderHistory();
+ if(id==="remindersPage")renderReminders();
+}
+
+/* =========================
+   METHODS
+========================= */
+
+function chooseMethod(type,method){
+
+ if(type==="expense"){
+  expenseMethod=method;
+  document.getElementById("expenseCash").classList.toggle("selected",method==="cash");
+  document.getElementById("expenseCard").classList.toggle("selected",method==="card");
+ }
+
+ if(type==="income"){
+  incomeMethod=method;
+  document.getElementById("incomeCash").classList.toggle("selected",method==="cash");
+  document.getElementById("incomeCard").classList.toggle("selected",method==="card");
+ }
+
+ if(type==="reminder"){
+  reminderMethod=method;
+  document.getElementById("reminderCash").classList.toggle("selected",method==="cash");
+  document.getElementById("reminderCard").classList.toggle("selected",method==="card");
+ }
+}
+
+/* =========================
+   EXPENSE CATEGORY
+========================= */
+
+document.getElementById("expenseCategory")
+.addEventListener("change",renderExpenseExtra);
+
+function renderExpenseExtra(){
+
+ const cat=document.getElementById("expenseCategory").value;
+ const box=document.getElementById("expenseExtra");
+
+ if(cat==="Taxi"){
+  box.innerHTML=`
+   <label>Qayerdan?</label>
+   <input id="taxiFrom" placeholder="Boshlanish joyi">
+
+   <label>Qayerga?</label>
+   <input id="taxiTo" placeholder="Borilgan manzil">
+  `;
+ }
+
+ else if(cat==="Ovqat"){
+  box.innerHTML=`
+   <label>Ovqat turi</label>
+   <select id="foodType">
+    <option>Suv</option>
+    <option>Ovqat</option>
+    <option>Ichimlik</option>
+    <option>Fast food</option>
+    <option>Boshqa</option>
+   </select>
+  `;
+ }
+
+ else if(cat==="Do‘kon"){
+  box.innerHTML=`
+   <label>Do‘kon turi</label>
+   <select id="shopType">
+    <option>Kiyim</option>
+    <option>Qurilma</option>
+    <option>Uy jihozlari</option>
+    <option>O‘qish</option>
+    <option>Boshqa</option>
+   </select>
+  `;
+ }
+
+ else{
+  box.innerHTML=`
+   <label>Tafsilot</label>
+   <input id="otherDetail" placeholder="Nima xarid qilindi?">
+  `;
+ }
+}
+
+/* =========================
+   SAVE EXPENSE
+========================= */
+
+function saveExpense(){
+
+ const person=document.getElementById("expensePerson").value.trim();
+ const amount=Number(document.getElementById("expenseAmount").value);
+ const category=document.getElementById("expenseCategory").value;
+
+ if(!person||!amount||!expenseMethod){
+  alert("Shaxs, summa va Cash/Card ni kiriting!");
+  return;
+ }
+
+ let details="";
+
+ if(category==="Taxi"){
+  const from=document.getElementById("taxiFrom")?.value.trim()||"";
+  const to=document.getElementById("taxiTo")?.value.trim()||"";
+  details=`${from} → ${to}`;
+ }
+
+ if(category==="Ovqat")
+  details=document.getElementById("foodType")?.value||"";
+
+ if(category==="Do‘kon")
+  details=document.getElementById("shopType")?.value||"";
+
+ if(category==="Boshqa")
+  details=document.getElementById("otherDetail")?.value||"";
+
+ transactions.push({
+  id:Date.now(),
+  type:"expense",
+  person,
+  amount,
+  method:expenseMethod,
+  category,
+  details,
+  date:document.getElementById("expenseDate").value,
+  time:document.getElementById("expenseTime").value,
+  note:document.getElementById("expenseNote").value.trim()
+ });
+
+ saveAll();
+ updateDashboard();
+
+ document.getElementById("expensePerson").value="";
+ document.getElementById("expenseAmount").value="";
+ document.getElementById("expenseNote").value="";
+ expenseMethod="";
+ document.getElementById("expenseCash").classList.remove("selected");
+ document.getElementById("expenseCard").classList.remove("selected");
+
+ toast("Xarajat saqlandi ✅");
+}
+
+/* =========================
+   SAVE INCOME
+========================= */
+
+function saveIncome(){
+
+ const person=document.getElementById("incomePerson").value.trim();
+ const amount=Number(document.getElementById("incomeAmount").value);
+
+ if(!person||!amount||!incomeMethod){
+  alert("Shaxs, summa va Cash/Card ni kiriting!");
+  return;
+ }
+
+ transactions.push({
+  id:Date.now(),
+  type:"income",
+  person,
+  amount,
+  method:incomeMethod,
+  category:"Kirim",
+  details:"",
+  date:document.getElementById("incomeDate").value,
+  time:document.getElementById("incomeTime").value,
+  note:document.getElementById("incomeNote").value.trim()
+ });
+
+ saveAll();
+ updateDashboard();
+
+ document.getElementById("incomePerson").value="";
+ document.getElementById("incomeAmount").value="";
+ document.getElementById("incomeNote").value="";
+ incomeMethod="";
+ document.getElementById("incomeCash").classList.remove("selected");
+ document.getElementById("incomeCard").classList.remove("selected");
+
+ toast("Pul tushumi saqlandi ✅");
+}
+
+/* =========================
+   HISTORY FILTER
+========================= */
+
+function changeHistoryPeriod(){
+
+ const period=document.getElementById("historyPeriod").value;
+ const box=document.getElementById("historyFilters");
+
+ if(period==="day"){
+  box.innerHTML=`
+   <label>Qaysi kun?</label>
+   <input id="historyDay" type="date" onchange="renderHistoryList()">
+  `;
+ }
+
+ if(period==="month"){
+  box.innerHTML=`
+   <label>Qaysi oy va yil?</label>
+   <input id="historyMonth" type="month" onchange="renderHistoryList()">
+  `;
+ }
+
+ if(period==="year"){
+  box.innerHTML=`
+   <label>Qaysi yil?</label>
+   <input id="historyYear" type="number" inputmode="numeric"
+          placeholder="2026" min="2000" max="2100"
+          onchange="renderHistoryList()">
+  `;
+ }
+
+ renderHistoryList();
+}
+
+function renderHistory(){
+ changeHistoryPeriod();
+}
+
+function renderHistoryList(){
+
+ const list=document.getElementById("historyList");
+ const summary=document.getElementById("historySummary");
+ const period=document.getElementById("historyPeriod").value;
+
+ let filtered=[...transactions];
+
+ const day=document.getElementById("historyDay")?.value;
+ const month=document.getElementById("historyMonth")?.value;
+ const year=document.getElementById("historyYear")?.value;
+
+ if(period==="day"&&day)
+  filtered=filtered.filter(t=>t.date===day);
+
+ if(period==="month"&&month)
+  filtered=filtered.filter(t=>t.date.startsWith(month));
+
+ if(period==="year"&&year)
+  filtered=filtered.filter(t=>t.date.startsWith(year));
+
+ let income=0,expense=0;
+
+ filtered.forEach(t=>{
+  if(t.type==="income")income+=Number(t.amount);
+  else expense+=Number(t.amount);
+ });
+
+ summary.innerHTML=`
+  <div class="summary">
+   <div class="summaryCard">
+    <small>💰 KIRIM</small>
+    <strong class="income">+${money(income)}</strong>
+   </div>
+   <div class="summaryCard">
+    <small>💸 CHIQIM</small>
+    <strong class="expense">-${money(expense)}</strong>
+   </div>
+  </div>
+ `;
+
+ if(!filtered.length){
+  list.innerHTML=`<div class="empty">Bu davrda ma’lumot yo‘q</div>`;
+  return;
+ }
+
+ list.innerHTML=filtered
+ .slice()
+ .sort((a,b)=>(b.date+" "+b.time).localeCompare(a.date+" "+a.time))
+ .map(t=>`
+  <div class="historyItem">
+   <div>
+    <div class="historyName">
+     ${t.type==="income"?"💰":"💸"} ${escapeHtml(t.person)}
+    </div>
+
+    <div class="historyMeta">
+     ${t.type==="income"?"Kirim":"Chiqim"}
+     • ${t.category}
+     • ${t.method==="cash"?"💵 Cash":"💳 Card"}
+     ${t.details?`<br>📍 ${escapeHtml(t.details)}`:""}
+     <br>📅 ${t.date||"-"} • ⏰ ${t.time||"-"}
+     ${t.note?`<br>📝 ${escapeHtml(t.note)}`:""}
+    </div>
+   </div>
+
+   <strong class="${t.type==="income"?"income":"expense"}">
+    ${t.type==="income"?"+":"-"}${money(t.amount)}
+   </strong>
+  </div>
+ `).join("");
+}
+
+function escapeHtml(s){
+ return String(s||"")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;");
+}
+
+/* =========================
+   REMINDERS
+========================= */
+
+function showReminderForm(){
+ const box=document.getElementById("reminderFormBox");
+ box.style.display=box.style.display==="none"?"block":"none";
+}
+
+function saveReminder(){
+
+ const type=document.getElementById("reminderType").value;
+ const person=document.getElementById("reminderPerson").value.trim();
+ const amount=Number(document.getElementById("reminderAmount").value);
+ const date=document.getElementById("reminderDate").value;
+ const time=document.getElementById("reminderTime").value;
+
+ if(!person||!amount||!date||!time||!reminderMethod){
+  alert("Shaxs, summa, Cash/Card, sana va vaqtni kiriting!");
+  return;
+ }
+
+ reminders.push({
+  id:Date.now(),
+  type,
+  person,
+  amount,
+  method:reminderMethod,
+  date,
+  time,
+  note:document.getElementById("reminderNote").value.trim(),
+  paid:false,
+  createdAt:Date.now()
+ });
+
+ saveAll();
+
+ document.getElementById("reminderPerson").value="";
+ document.getElementById("reminderAmount").value="";
+ document.getElementById("reminderNote").value="";
+ reminderMethod="";
+ document.getElementById("reminderCash").classList.remove("selected");
+ document.getElementById("reminderCard").classList.remove("selected");
+
+ document.getElementById("reminderFormBox").style.display="none";
+
+ renderReminders();
+ updateDashboard();
+
+ toast("Eslatma saqlandi 🔔");
+}
+
+function reminderTitle(type){
+ if(type==="debt_given")return "🤝 Qarz berdim";
+ if(type==="debt_taken")return "🤝 Qarz oldim";
+ return "💳 To‘lov";
+}
+
+function renderReminders(){
+
+ const list=document.getElementById("reminderList");
+
+ if(!reminders.length){
+  list.innerHTML=`<div class="empty">Hozircha eslatma yo‘q</div>`;
+  return;
+ }
+
+ list.innerHTML=reminders
+ .slice()
+ .sort((a,b)=>(a.date+" "+a.time).localeCompare(b.date+" "+b.time))
+ .map(r=>`
+  <div class="reminderBig">
+   <div class="reminderTop">
+    <div>
+     <strong>${reminderTitle(r.type)}</strong>
+     <div style="margin-top:6px">${escapeHtml(r.person)}</div>
+     <div class="historyMeta">
+      ${money(r.amount)} • ${r.method==="cash"?"💵 Cash":"💳 Card"}
+      <br>📅 ${r.date} • ⏰ ${r.time}
+      ${r.note?`<br>📝 ${escapeHtml(r.note)}`:""}
+     </div>
+    </div>
+
+    <strong class="${r.paid?"income":"expense"}">
+     ${r.paid?"TOLDI":"KUTILMOQDA"}
+    </strong>
+   </div>
+
+   <div class="reminderActions">
+    ${!r.paid?
+     `<button class="smallBtn" onclick="markReminderPaid(${r.id})">✅ To‘landi</button>`:""}
+    <button class="smallBtn" onclick="deleteReminder(${r.id})">🗑</button>
+   </div>
+  </div>
+ `).join("");
+}
+
+function renderHomeReminders(){
+
+ const box=document.getElementById("homeReminders");
+ const count=document.getElementById("homeReminderCount");
+
+ const active=reminders.filter(r=>!r.paid);
+
+ count.textContent=active.length;
+
+ if(!active.length){
+  box.innerHTML=`
+   <div class="reminder">
+    <div class="reminderIcon">＋</div>
+    <strong>Eslatma yo‘q</strong>
+    <span>🔔 Eslatmalar menyusidan qo‘shing</span>
+   </div>
+  `;
+  return;
+ }
+
+ box.innerHTML=active
+ .slice(0,6)
+ .map(r=>`
+  <div class="reminder">
+   <div class="reminderIcon">${r.type==="payment"?"💳":"🤝"}</div>
+   <strong>${escapeHtml(r.person)}</strong>
+   <span>${money(r.amount)}</span>
+   <span>📅 ${r.date}</span>
+   <span>⏰ ${r.time}</span>
+  </div>
+ `).join("");
+}
+
+function markReminderPaid(id){
+
+ const r=reminders.find(x=>x.id===id);
+ if(!r)return;
+
+ if(!confirm("Bu eslatmani to‘landi deb belgilaysizmi?"))return;
+
+ /*
+  Qarz berdim -> pul chiqdi
+  Qarz oldim -> pul tushdi
+  To‘lov -> pul chiqdi
+ */
+ if(r.type==="debt_given"||r.type==="payment"){
+  transactions.push({
+   id:Date.now(),
+   type:"expense",
+   person:r.person,
+   amount:r.amount,
+   method:r.method,
+   category:r.type==="payment"?"To‘lov":"Qarz",
+   details:"",
+   date:nowDate(),
+   time:nowTime(),
+   note:"Eslatmadan to‘landi"
+  });
+ }
+
+ if(r.type==="debt_taken"){
+  transactions.push({
+   id:Date.now(),
+   type:"income",
+   person:r.person,
+   amount:r.amount,
+   method:r.method,
+   category:"Qarz",
+   details:"",
+   date:nowDate(),
+   time:nowTime(),
+   note:"Eslatmadan olindi"
+  });
+ }
+
+ r.paid=true;
+
+ saveAll();
+ updateDashboard();
+ renderReminders();
+
+ toast("To‘lov saqlandi ✅");
+}
+
+function deleteReminder(id){
+ if(!confirm("Eslatmani o‘chirasizmi?"))return;
+ reminders=reminders.filter(r=>r.id!==id);
+ saveAll();
+ renderReminders();
+ updateDashboard();
+}
+
+/* =========================
+   MONTHLY REPORT
+========================= */
+
+function makeMonthlyReport(){
+
+ const d=new Date();
+
+ /*
+  Faqat oyning 1-kunida yaratiladi.
+  Oldingi oy hisoblanadi.
+ */
+
+ if(d.getDate()!==1)return;
+
+ const previous=new Date(d.getFullYear(),d.getMonth()-1,1);
+ const key=
+  previous.getFullYear()+"-"+String(previous.getMonth()+1).padStart(2,"0");
+
+ const reportKey="report_"+key;
+
+ if(localStorage.getItem(reportKey))return;
+
+ const monthTransactions=transactions.filter(t=>
+  t.date && t.date.startsWith(key)
+ );
+
+ let income=0,expense=0;
+
+ monthTransactions.forEach(t=>{
+  if(t.type==="income")income+=Number(t.amount);
+  else expense+=Number(t.amount);
+ });
+
+ reminders.unshift({
+  id:Date.now(),
+  type:"report",
+  person:key,
+  amount:Math.max(0,income-expense),
+  method:"cash",
+  date:nowDate(),
+  time:nowTime(),
+  note:
+   `📊 Oylik hisobot\n`+
+   `💰 Kirim: ${money(income)}\n`+
+   `💸 Chiqim: ${money(expense)}\n`+
+   `💵 Qoldiq: ${money(income-expense)}`,
+  paid:false,
+  createdAt:Date.now()
+ });
+
+ localStorage.setItem(reportKey,"1");
+ saveAll();
+}
+
+/* =========================
+   SETTINGS / THEME
+========================= */
+
+function applyTheme(){
+
+ const theme=settings.theme||"dark";
+
+ if(theme==="dark"){
+  document.body.classList.remove("light");
+ }
+
+ if(theme==="light"){
+  document.body.classList.add("light");
+ }
+
+ if(theme==="auto"){
+  const hour=new Date().getHours();
+  const light=hour>=7&&hour<19;
+  document.body.classList.toggle("light",light);
+ }
+}
+
+function setTheme(v){
+ settings.theme=v;
+ saveAll();
+ applyTheme();
+ toast("Rejim saqlandi ✅");
+}
+
+function setLanguage(v){
+ settings.language=v;
+ saveAll();
+
+ /*
+  Asosiy funksiyalar til almashtirish bilan saqlanadi.
+  Keyingi UI matnlari uchun shu setting ishlatiladi.
+ */
+
+ if(v==="en")toast("English selected");
+ else if(v==="ru")toast("Русский выбран");
+ else toast("O‘zbek tili tanlandi");
+}
+
+/* =========================
+   AUTO LOCK
+========================= */
+
+function setAutoLock(v){
+ settings.autoLock=Number(v);
+ saveAll();
+ startAutoLock();
+ toast("Auto-lock saqlandi ✅");
+}
+
+function startAutoLock(){
+
+ clearTimeout(autoLockTimer);
+
+ const minutes=Number(settings.autoLock||0);
+
+ if(minutes<=0)return;
+
+ autoLockTimer=setTimeout(()=>{
+  lockApp();
+ },minutes*60*1000);
+}
+
+["click","touchstart","keydown"].forEach(evt=>{
+ document.addEventListener(evt,()=>{
+  if(document.getElementById("pinScreen").style.display==="none"){
+   startAutoLock();
+  }
+ },{passive:true});
+});
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+async function enableNotifications(){
+
+ if(!("Notification" in window)){
+  alert("Bu brauzer bildirishnomani qo‘llamaydi.");
+  return;
+ }
+
+ const permission=await Notification.requestPermission();
+
+ if(permission==="granted"){
+  toast("Bildirishnomalar yoqildi 🔔");
+  checkReminderNotifications();
+ }else{
+  alert("Bildirishnoma ruxsati berilmadi.");
+ }
+}
+
+function checkReminderNotifications(){
+
+ if(!("Notification" in window))return;
+ if(Notification.permission!=="granted")return;
+
+ const today=nowDate();
+
+ reminders
+ .filter(r=>!r.paid && r.date===today)
+ .forEach(r=>{
+  new Notification("My Money 🔔",{
+   body:`${r.person} — ${money(r.amount)} • ${r.time}`
+  });
+ });
+}
+
+/* =========================
+   BACKUP
+========================= */
+
+function backupData(){
+
+ const data={
+  version:1,
+  transactions,
+  reminders,
+  settings,
+  pinCode
+ };
+
+ const blob=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+
+ a.href=url;
+ a.download="my-money-backup.json";
+ a.click();
+
+ URL.revokeObjectURL(url);
+
+ toast("Backup tayyorlandi 💾");
+}
+
+function restoreData(event){
+
+ const file=event.target.files[0];
+ if(!file)return;
+
+ const reader=new FileReader();
+
+ reader.onload=function(){
+
+  try{
+   const data=JSON.parse(reader.result);
+
+   if(!Array.isArray(data.transactions)||
+      !Array.isArray(data.reminders)){
+    throw new Error();
+   }
+
+   transactions=data.transactions;
+   reminders=data.reminders;
+   settings=data.settings||{};
+
+   if(data.pinCode){
+    pinCode=data.pinCode;
+    localStorage.setItem("mm_pin",pinCode);
+   }
+
+   saveAll();
+
+   applyTheme();
+   updateDashboard();
+   renderReminders();
+   renderHistory();
+
+   toast("Ma’lumotlar tiklandi ♻️");
+
+  }catch(e){
+   alert("Backup fayli noto‘g‘ri.");
+  }
+ };
+
+ reader.readAsText(file);
+}
+
+/* =========================
+   DELETE
+========================= */
+
+function deleteAllData(){
+
+ if(!confirm("BARCHA kirim, chiqim va eslatmalar o‘chiriladi. Davom etasizmi?"))
+  return;
+
+ transactions=[];
+ reminders=[];
+
+ localStorage.removeItem("mm_transactions");
+ localStorage.removeItem("mm_reminders");
+
+ saveAll();
+
+ updateDashboard();
+ renderReminders();
+ renderHistory();
+
+ toast("Barcha ma’lumotlar o‘chirildi 🗑");
+}
+
+/* =========================
+   INIT
+========================= */
+
+setDefaultDateTime();
+renderExpenseExtra();
+
+settings.theme=settings.theme||"dark";
+settings.language=settings.language||"uz";
+settings.autoLock=settings.autoLock??0;
+
+document.getElementById("themeSelect").value=settings.theme;
+document.getElementById("languageSelect").value=settings.language;
+document.getElementById("autoLockSelect").value=settings.autoLock;
+
+applyTheme();
+updateDashboard();
+changeHistoryPeriod();
+renderReminders();
+makeMonthlyReport();
+checkReminderNotifications();
+
+setInterval(()=>{
+ if((settings.theme||"dark")==="auto")applyTheme();
+},60000);
+
+</script>
+
+</body>
+</html>
