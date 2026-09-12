@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<title>My Money</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;
+    background:#080a0f;
+    color:#fff;
+    min-height:100vh;
+}
+
+button,input,select,textarea{
+    font:inherit;
+}
+
+.app{
+    min-height:100vh;
+    padding:25px 16px 100px;
+    max-width:700px;
+    margin:auto;
+}
+
+/* PIN */
+#pinScreen{
+    position:fixed;
+    inset:0;
+    background:#080a0f;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.pinBox{
+    width:100%;
+    max-width:360px;
+    text-align:center;
+}
+
+.logo{
+    font-size:45px;
+    margin-bottom:10px;
+}
+
+.pinBox h1{
+    margin:0;
+    font-size:30px;
+}
+
+.pinBox p{
+    color:#858b99;
+}
+
+.pinDots{
+    display:flex;
+    justify-content:center;
+    gap:13px;
+    margin:30px 0;
+}
+
+.dot{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#292d38;
+}
+
+.dot.active{
+    background:#fff;
+}
+
+.pinPad{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.pinBtn{
+    height:65px;
+    border:0;
+    border-radius:20px;
+    background:#151821;
+    color:#fff;
+    font-size:22px;
+}
+
+.pinBtn:active{
+    transform:scale(.94);
+}
+
+/* HEADER */
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.lock{
+    border:0;
+    background:#151821;
+    color:white;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    font-size:18px;
+}
+
+.balance{
+    text-align:center;
+    padding:20px 0 22px;
+}
+
+.balance small{
+    color:#777e8d;
+}
+
+.balanceRow{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+}
+
+#balance{
+    font-size:36px;
+    font-weight:800;
+    margin:8px 0;
+}
+
+.eye{
+    border:0;
+    background:none;
+    color:#9aa0ad;
+    font-size:18px;
+}
+
+/* CARDS */
+.sectionTitle{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:10px 0 12px;
+}
+
+.sectionTitle h2{
+    font-size:19px;
+    margin:0;
+}
+
+.reminders{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.reminder{
+    background:#141720;
+    border:1px solid #202430;
+    border-radius:20px;
+    padding:15px;
+    min-height:110px;
+}
+
+.reminder .icon{
+    font-size:22px;
+}
+
+.reminder strong{
+    display:block;
+    margin-top:8px;
+    font-size:14px;
+}
+
+.reminder span{
+    display:block;
+    color:#8b91a0;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.moneyCards{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:16px;
+}
+
+.moneyCard{
+    background:#11141c;
+    border-radius:20px;
+    padding:16px;
+}
+
+.moneyCard small{
+    color:#858b99;
+}
+
+.moneyCard strong{
+    display:block;
+    margin-top:7px;
+    font-size:18px;
+}
+
+/* NAV */
+.nav{
+    position:fixed;
+    bottom:12px;
+    left:12px;
+    right:12px;
+    max-width:676px;
+    margin:auto;
+    height:70px;
+    background:rgba(20,23,32,.96);
+    border:1px solid #292e3a;
+    border-radius:25px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    align-items:center;
+    z-index:20;
+    backdrop-filter:blur(20px);
+}
+
+.nav button{
+    border:0;
+    background:none;
+    color:#747b8a;
+    font-size:11px;
+}
+
+.nav button span{
+    display:block;
+    font-size:22px;
+    margin-bottom:3px;
+}
+
+.nav button.active{
+    color:#fff;
+}
+
+/* PAGES */
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page h1{
+    font-size:28px;
+    margin:8px 0 20px;
+}
+
+.formCard{
+    background:#13161e;
+    border:1px solid #222631;
+    border-radius:24px;
+    padding:18px;
+}
+
+label{
+    display:block;
+    color:#8b91a0;
+    font-size:13px;
+    margin:14px 0 7px;
+}
+
+input,select,textarea{
+    width:100%;
+    border:1px solid #292e3a;
+    background:#0d1016;
+    color:white;
+    border-radius:15px;
+    padding:14px;
+    outline:none;
+}
+
+textarea{
+    min-height:80px;
+    resize:none;
+}
+
+.method{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.method button{
+    padding:14px;
+    border-radius:15px;
+    border:1px solid #292e3a;
+    background:#0d1016;
+    color:#aaa;
+}
+
+.method button.selected{
+    background:#fff;
+    color:#000;
+}
+
+.save{
+    width:100%;
+    border:0;
+    border-radius:17px;
+    padding:16px;
+    margin-top:20px;
+    background:#fff;
+    color:#000;
+    font-weight:700;
+}
+
+.historyItem{
+    background:#141720;
+    border-radius:19px;
+    padding:15px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.income{
+    color:#48d597;
+}
+
+.expense{
+    color:#ff6878;
+}
+
+.empty{
+    text-align:center;
+    color:#737987;
+    padding:40px 10px;
+}
+
+/* SETTINGS */
+.setting{
+    background:#141720;
+    border-radius:18px;
+    padding:16px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.setting button{
+    border:0;
+    background:#252a35;
+    color:#fff;
+    border-radius:12px;
+    padding:8px 12px;
+}
+
+@media(max-width:390px){
+    #balance{
+        font-size:31px;
+    }
+
+    .nav{
+        height:66px;
+    }
+
+    .nav button span{
+        font-size:20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pinScreen">
+    <div class="pinBox">
+        <div class="logo">💰</div>
+        <h1>My Money</h1>
+        <p id="pinText">PIN kodni kiriting</p>
+
+        <div class="pinDots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <div class="pinPad">
+            <button class="pinBtn" onclick="pin('1')">1</button>
+            <button class="pinBtn" onclick="pin('2')">2</button>
+            <button class="pinBtn" onclick="pin('3')">3</button>
+            <button class="pinBtn" onclick="pin('4')">4</button>
+            <button class="pinBtn" onclick="pin('5')">5</button>
+            <button class="pinBtn" onclick="pin('6')">6</button>
+            <button class="pinBtn" onclick="pin('7')">7</button>
+            <button class="pinBtn" onclick="pin('8')">8</button>
+            <button class="pinBtn" onclick="pin('9')">9</button>
+            <button class="pinBtn" onclick="pin('0')" style="grid-column:2">0</button>
+            <button class="pinBtn" onclick="backPin()">⌫</button>
+        </div>
+    </div>
+</div>
+
+<div class="app">
+
+<!-- HOME -->
+<section id="home" class="page active">
+
+    <div class="top">
+        <div></div>
+        <button class="lock" onclick="lockApp()">🔒</button>
+    </div>
+
+    <div class="balance">
+        <small>UMUMIY BALANS</small>
+
+        <div class="balanceRow">
+            <div id="balance">0 so'm</div>
+            <button class="eye" onclick="toggleBalance()">👁️</button>
+        </div>
+    </div>
+
+    <div class="sectionTitle">
+        <h2>🔔 Eslatmalar</h2>
+        <small id="reminderCount">0</small>
+    </div>
+
+    <div id="reminders" class="reminders"></div>
+
+    <div class="moneyCards">
+        <div class="moneyCard">
+            <small>💵 CASH</small>
+            <strong id="cash">0 so'm</strong>
+        </div>
+
+        <div class="moneyCard">
+            <small>💳 CARD</small>
+            <strong id="card">0 so'm</strong>
+        </div>
+    </div>
+
+</section>
+
+<!-- EXPENSE -->
+<section id="expense" class="page">
+    <h1>💸 To‘landi</h1>
+
+    <div class="formCard">
+
+        <label>Kimga / qayerga?</label>
+        <input id="toWho" placeholder="Masalan: Taxi, do‘kon...">
+
+        <label>Summa</label>
+        <input id="expenseAmount" type="number" inputmode="decimal" placeholder="0">
+
+        <label>Kategoriya</label>
+        <select id="category">
+            <option>🚕 Taxi</option>
+            <option>🍔 Ovqat</option>
+            <option>🛒 Do‘kon</option>
+            <option>📦 Boshqa</option>
+        </select>
+
+        <div id="categoryExtra"></div>
+
+        <label>To‘lov turi</label>
+        <div class="method">
+            <button id="cashExpense" onclick="selectMethod('expense','cash')">💵 Cash</button>
+            <button id="cardExpense" onclick="selectMethod('expense','card')">💳 Card</button>
+        </div>
+
+        <label>Sana</label>
+        <input id="expenseDate" type="date">
+
+        <label>Soat</label>
+        <input id="expenseTime" type="time">
+
+        <label>Izoh</label>
+        <textarea id="expenseNote" placeholder="Ixtiyoriy..."></textarea>
+
+        <button class="save" onclick="saveExpense()">SAQLASH</button>
+    </div>
+</section>
+
+<!-- INCOME -->
+<section id="incomePage" class="page">
+    <h1>💰 Pul tushdi</h1>
+
+    <div class="formCard">
+
+        <label>Kimdan?</label>
+        <input id="fromWho" placeholder="Masalan: Akam">
+
+        <label>Summa</label>
+        <input id="incomeAmount" type="number" inputmode="decimal" placeholder="0">
+
+        <label>Qabul qilish</label>
+        <div class="method">
+            <button id="cashIncome" onclick="selectMethod('income','cash')">💵 Cash</button>
+            <button id="cardIncome" onclick="selectMethod('income','card')">💳 Card</button>
+        </div>
+
+        <label>Sana</label>
+        <input id="incomeDate" type="date">
+
+        <label>Soat</label>
+        <input id="incomeTime" type="time">
+
+        <label>Izoh</label>
+        <textarea id="incomeNote" placeholder="Ixtiyoriy..."></textarea>
+
+        <button class="save" onclick="saveIncome()">PULNI SAQLASH</button>
+    </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+    <h1>⚙️ Sozlamalar</h1>
+
+    <div class="setting">
+        <span>🌙 Night mode</span>
+        <button onclick="alert('Night mode yoqilgan')">ON</button>
+    </div>
+
+    <div class="setting">
+        <span>☀️ Day mode</span>
+        <button onclick="alert('Keyingi versiyada')">OPEN</button>
+    </div>
+
+    <div class="setting">
+        <span>🔐 PIN almashtirish</span>
+        <button onclick="changePin()">O‘zgartirish</button>
+    </div>
+
+    <div class="setting">
+        <span>🇺🇿 Til</span>
+        <button>UZ</button>
+    </div>
+
+    <div class="setting">
+        <span>💵 Valyuta</span>
+        <button>UZS</button>
+    </div>
+</section>
+
+<!-- HISTORY -->
+<section id="history" class="page">
+    <h1>📜 Tarix</h1>
+
+    <div class="formCard">
+
+        <label>Davr</label>
+
+        <select id="period" onchange="periodChanged()">
+            <option value="day">Kunlik</option>
+            <option value="month">Oylik</option>
+            <option value="year">Yillik</option>
+        </select>
+
+        <div id="periodInput"></div>
+
+    </div>
+
+    <div id="historyList" style="margin-top:15px"></div>
+</section>
+
+</div>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+
+    <button class="active" onclick="showPage('home',this)">
+        <span>🏠</span>Home
+    </button>
+
+    <button onclick="showPage('expense',this)">
+        <span>💸</span>To‘landi
+    </button>
+
+    <button onclick="showPage('incomePage',this)">
+        <span>💰</span>Pul tushdi
+    </button>
+
+    <button onclick="showPage('settings',this)">
+        <span>⚙️</span>Sozlamalar
+    </button>
+
+    <button onclick="showPage('history',this)">
+        <span>📜</span>Tarix
+    </button>
+
+</nav>
+
+<script>
+let transactions =
+JSON.parse(localStorage.getItem("transactions") || "[]");
+
+let reminders =
+JSON.parse(localStorage.getItem("reminders") || "[]");
+
+let pinCode =
+localStorage.getItem("pinCode");
+
+let enteredPin = "";
+
+let selectedExpenseMethod = "";
+let selectedIncomeMethod = "";
+
+let balanceVisible = true;
+
+/* DEFAULT PIN */
+if(!pinCode){
+    pinCode = "1234";
+    localStorage.setItem("pinCode",pinCode);
+}
+
+/* PIN */
+function pin(number){
+
+    if(enteredPin.length >= 6) return;
+
+    enteredPin += number;
+    updateDots();
+
+    if(enteredPin.length >= 4){
+
+        if(enteredPin === pinCode){
+            document.getElementById("pinScreen").style.display="none";
+            enteredPin="";
+            updateDots();
+        }else if(enteredPin.length === pinCode.length){
+            document.getElementById("pinText").textContent="PIN noto‘g‘ri";
+            setTimeout(()=>{
+                enteredPin="";
+                updateDots();
+                document.getElementById("pinText").textContent="PIN kodni kiriting";
+            },700);
+        }
+    }
+}
+
+function backPin(){
+    enteredPin=enteredPin.slice(0,-1);
+    updateDots();
+}
+
+function updateDots(){
+
+    document.querySelectorAll(".dot").forEach((dot,i)=>{
+        dot.classList.toggle("active",i<enteredPin.length);
+    });
+}
+
+function lockApp(){
+    document.getElementById("pinScreen").style.display="flex";
+    enteredPin="";
+    updateDots();
+}
+
+function changePin(){
+
+    let oldPin=prompt("Eski PIN:");
+    if(oldPin!==pinCode){
+        alert("PIN noto‘g‘ri");
+        return;
+    }
+
+    let newPin=prompt("Yangi PIN (4-6 raqam):");
+
+    if(!/^\d{4,6}$/.test(newPin)){
+        alert("PIN 4-6 ta raqam bo‘lishi kerak");
+        return;
+    }
+
+    pinCode=newPin;
+    localStorage.setItem("pinCode",pinCode);
+
+    alert("PIN muvaffaqiyatli o‘zgartirildi");
+}
+
+/* NAV */
+function showPage(id,button){
+
+    document.querySelectorAll(".page")
+    .forEach(p=>p.classList.remove("active"));
+
+    document.getElementById(id)
+    .classList.add("active");
+
+    document.querySelectorAll(".nav button")
+    .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    if(id==="home") updateDashboard();
+    if(id==="history") renderHistory();
+}
+
+/* METHOD */
+function selectMethod(type,method){
+
+    if(type==="expense"){
+        selectedExpenseMethod=method;
+
+        document.getElementById("cashExpense")
+        .classList.toggle("selected",method==="cash");
+
+        document.getElementById("cardExpense")
+        .classList.toggle("selected",method==="card");
+    }
+
+    if(type==="income"){
+        selectedIncomeMethod=method;
+
+        document.getElementById("cashIncome")
+        .classList.toggle("selected",method==="cash");
+
+        document.getElementById("cardIncome")
+        .classList.toggle("selected",method==="card");
+    }
+}
+
+/* CATEGORY */
+document.getElementById("category")
+.addEventListener("change",categoryChanged);
+
+function categoryChanged(){
+
+    let cat=document.getElementById("category").value;
+
+    let html="";
+
+    if(cat.includes("Taxi")){
+        html=`
+        <label>Qayerdan?</label>
+        <input id="fromPlace" placeholder="Boshlanish joyi">
+
+        <label>Qayerga?</label>
+        <input id="toPlace" placeholder="Manzil">
+        `;
+    }
+
+    if(cat.includes("Ovqat")){
+        html=`
+        <label>Ovqat turi</label>
+        <select id="foodType">
+            <option>Suv</option>
+            <option>Ovqat</option>
+            <option>Ichimlik</option>
+            <option>Fast food</option>
+            <option>Boshqa</option>
+        </select>
+        `;
+    }
+
+    if(cat.includes("Do‘kon")){
+        html=`
+        <label>Do‘kon turi</label>
+        <select id="shopType">
+            <option>Kiyim</option>
+            <option>Qurilma</option>
+            <option>Uy jihozlari</option>
+            <option>O‘qish</option>
+            <option>Boshqa</option>
+        </select>
+        `;
+    }
+
+    if(cat.includes("Boshqa")){
+        html=`
+        <label>Tafsilot</label>
+        <input id="otherDetail" placeholder="Nima uchun?">
+        `;
+    }
+
+    document.getElementById("categoryExtra").innerHTML=html;
+}
+
+/* SAVE EXPENSE */
+function saveExpense(){
+
+    let who=document.getElementById("toWho").value.trim();
+    let amount=Number(document.getElementById("expenseAmount").value);
+
+    if(!who || !amount || !selectedExpenseMethod){
+        alert("Kimga, summa va Cash/Card ni kiriting!");
+        return;
+    }
+
+    let category=document.getElementById("category").value;
+
+    let details="";
+
+    if(category.includes("Taxi")){
+        let a=document.getElementById("fromPlace")?.value || "";
+        let b=document.getElementById("toPlace")?.value || "";
+        details=`${a} → ${b}`;
+    }
+
+    if(category.includes("Ovqat")){
+        details=document.getElementById("foodType")?.value || "";
+    }
+
+    if(category.includes("Do‘kon")){
+        details=document.getElementById("shopType")?.value || "";
+    }
+
+    if(category.includes("Boshqa")){
+        details=document.getElementById("otherDetail")?.value || "";
+    }
+
+    let date=document.getElementById("expenseDate").value;
+    let time=document.getElementById("expenseTime").value;
+
+    transactions.push({
+        type:"expense",
+        who,
+        amount,
+        method:selectedExpenseMethod,
+        category,
+        details,
+        date,
+        time,
+        note:document.getElementById("expenseNote").value
+    });
+
+    saveData();
+
+    alert("Xarajat saqlandi ✅");
+
+    document.getElementById("toWho").value="";
+    document.getElementById("expenseAmount").value="";
+    document.getElementById("expenseNote").value="";
+}
+
+/* SAVE INCOME */
+function saveIncome(){
+
+    let who=document.getElementById("fromWho").value.trim();
+    let amount=Number(document.getElementById("incomeAmount").value);
+
+    if(!who || !amount || !selectedIncomeMethod){
+        alert("Kimdan, summa va Cash/Card ni kiriting!");
+        return;
+    }
+
+    transactions.push({
+        type:"income",
+        who,
+        amount,
+        method:selectedIncomeMethod,
+        category:"Kirim",
+        date:document.getElementById("incomeDate").value,
+        time:document.getElementById("incomeTime").value,
+        note:document.getElementById("incomeNote").value
+    });
+
+    saveData();
+
+    alert("Pul tushumi saqlandi ✅");
+
+    document.getElementById("fromWho").value="";
+    document.getElementById("incomeAmount").value="";
+    document.getElementById("incomeNote").value="";
+}
+
+/* DATA */
+function saveData(){
+    localStorage.setItem("transactions",JSON.stringify(transactions));
+    localStorage.setItem("reminders",JSON.stringify(reminders));
+    updateDashboard();
+}
+
+/* DASHBOARD */
+function updateDashboard(){
+
+    let total=0;
+    let cash=0;
+    let card=0;
+
+    transactions.forEach(t=>{
+
+        let value=t.type==="income"
+            ? t.amount
+            : -t.amount;
+
+        total+=value;
+
+        if(t.method==="cash") cash+=value;
+        if(t.method==="card") card+=value;
+    });
+
+    document.getElementById("balance").textContent=
+        balanceVisible ? money(total) : "••••••";
+
+    document.getElementById("cash").textContent=
+        balanceVisible ? money(cash) : "••••••";
+
+    document.getElementById("card").textContent=
+        balanceVisible ? money(card) : "••••••";
+
+    renderReminders();
+}
+
+function money(n){
+    return Number(n).toLocaleString("uz-UZ")+" so'm";
+}
+
+function toggleBalance(){
+    balanceVisible=!balanceVisible;
+    updateDashboard();
+}
+
+/* REMINDERS */
+function renderReminders(){
+
+    let box=document.getElementById("reminders");
+
+    document.getElementById("reminderCount")
+    .textContent=reminders.length;
+
+    if(!reminders.length){
+        box.innerHTML=`
+        <div class="reminder">
+            <div class="icon">➕</div>
+            <strong>Eslatma yo‘q</strong>
+            <span>Keyingi versiyada qo‘shiladi</span>
+        </div>`;
+        return;
+    }
+
+    box.innerHTML=reminders
+    .slice(0,6)
+    .map(r=>`
+        <div class="reminder">
+            <div class="icon">🔔</div>
+            <strong>${r.name}</strong>
+            <span>${money(r.amount)}</span>
+            <span>${r.date} • ${r.time}</span>
+        </div>
+    `).join("");
+}
+
+/* HISTORY */
+function periodChanged(){
+    renderHistory();
+}
+
+function renderHistory(){
+
+    let period=document.getElementById("period").value;
+
+    let html="";
+
+    if(period==="day"){
+        html=`
+        <label>Qaysi kun?</label>
+        <input id="filterDate" type="date"
+        onchange="renderHistory()">
+        `;
+    }
+
+    if(period==="month"){
+        html=`
+        <label>Qaysi oy?</label>
+        <input id="filterMonth" type="month"
+        onchange="renderHistory()">
+        `;
+    }
+
+    if(period==="year"){
+        html=`
+        <label>Qaysi yil?</label>
+        <input id="filterYear" type="number"
+        placeholder="2026"
+        onchange="renderHistory()">
+        `;
+    }
+
+    document.getElementById("periodInput").innerHTML=html;
+
+    renderHistoryList();
+}
+
+function renderHistoryList(){
+
+    let list=document.getElementById("historyList");
+
+    let period=document.getElementById("period").value;
+
+    let filtered=transactions;
+
+    let date=document.getElementById("filterDate")?.value;
+    let month=document.getElementById("filterMonth")?.value;
+    let year=document.getElementById("filterYear")?.value;
+
+    if(period==="day" && date)
+        filtered=filtered.filter(t=>t.date===date);
+
+    if(period==="month" && month)
+        filtered=filtered.filter(t=>t.date?.startsWith(month));
+
+    if(period==="year" && year)
+        filtered=filtered.filter(t=>t.date?.startsWith(year));
+
+    if(!filtered.length){
+        list.innerHTML=`<div class="empty">Hozircha ma'lumot yo‘q</div>`;
+        return;
+    }
+
+    let income=0;
+    let expense=0;
+
+    filtered.forEach(t=>{
+        if(t.type==="income") income+=t.amount;
+        else expense+=t.amount;
+    });
+
+    list.innerHTML=`
+        <div class="moneyCards" style="margin-bottom:15px">
+            <div class="moneyCard">
+                <small>💰 KIRIM</small>
+                <strong class="income">+${money(income)}</strong>
+            </div>
+            <div class="moneyCard">
+                <small>💸 CHIQIM</small>
+                <strong class="expense">-${money(expense)}</strong>
+            </div>
+        </div>
+
+        ${filtered.slice().reverse().map(t=>`
+            <div class="historyItem">
+                <div>
+                    <strong>
+                    ${t.type==="income" ? "💰" : "💸"}
+                    ${t.who}
+                    </strong>
+                    <div style="color:#7f8694;font-size:12px;margin-top:5px">
+                        ${t.category} • ${t.method==="cash"?"💵 Cash":"💳 Card"}
+                    </div>
+                    <div style="color:#666d7b;font-size:11px;margin-top:4px">
+                        📅 ${t.date || "-"} • ⏰ ${t.time || "-"}
+                    </div>
+                </div>
+
+                <strong class="${t.type==="income"?"income":"expense"}">
+                    ${t.type==="income"?"+":"-"}${money(t.amount)}
+                </strong>
+            </div>
+        `).join("")}
+    `;
+}
+
+/* DEFAULT DATE/TIME */
+function setDateTime(){
+
+    let now=new Date();
+
+    let date=now.toISOString().split("T")[0];
+
+    let time=
+        String(now.getHours()).padStart(2,"0")
+        +":"+
+        String(now.getMinutes()).padStart(2,"0");
+
+    document.getElementById("expenseDate").value=date;
+    document.getElementById("expenseTime").value=time;
+
+    document.getElementById("incomeDate").value=date;
+    document.getElementById("incomeTime").value=time;
+}
+
+/* START */
+setDateTime();
+categoryChanged();
+periodChanged();
+updateDashboard();
+</script>
+
+</body>
+</html>
